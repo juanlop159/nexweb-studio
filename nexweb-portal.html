@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Mi Portal — Nexweb Studio</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#04060d;--surface:#0a0f1e;--surface2:#0f1628;--border:#1a2540;--border2:#243050;
+  --blue:#2563eb;--blue-light:#60a5fa;--cyan:#38bdf8;--green:#22c55e;--text:#f0f6ff;--text2:#94a3b8;--text3:#475569;
+  --mono:'JetBrains Mono',monospace;--sans:'Space Grotesk',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+body::before{content:'';position:fixed;top:-200px;left:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(37,99,235,0.08),transparent 70%);pointer-events:none;}
+body::after{content:'';position:fixed;bottom:-200px;right:-200px;width:500px;height:500px;background:radial-gradient(circle,rgba(56,189,248,0.06),transparent 70%);pointer-events:none;}
+
+/* LOGIN */
+.login-wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;background:var(--bg);padding:20px;}
+.login-box{background:var(--surface);border:1px solid var(--border2);border-radius:24px;padding:40px;width:400px;max-width:100%;text-align:center;}
+.logo-ring{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,var(--blue),var(--cyan));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;color:#fff;margin:0 auto 20px;box-shadow:0 0 30px rgba(37,99,235,0.4);}
+.login-box h2{font-size:22px;font-weight:700;margin-bottom:4px;}
+.login-box .sub{font-size:13px;color:var(--text3);margin-bottom:28px;font-family:var(--mono);}
+.code-input-wrap{display:flex;gap:8px;justify-content:center;margin-bottom:20px;}
+.code-char{width:48px;height:56px;background:var(--surface2);border:2px solid var(--border2);border-radius:10px;text-align:center;font-size:22px;font-weight:700;color:var(--text);font-family:var(--mono);outline:none;text-transform:uppercase;transition:border-color 0.15s;}
+.code-char:focus{border-color:var(--blue);}
+.login-btn{width:100%;padding:13px;background:var(--blue);border:none;color:#fff;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:all 0.15s;margin-bottom:10px;}
+.login-btn:hover{background:#1d4ed8;}
+.login-hint{font-size:11px;color:var(--text3);font-family:var(--mono);}
+.login-error{font-size:12px;color:#ef4444;margin-top:10px;display:none;}
+
+/* APP */
+.app{max-width:900px;margin:0 auto;padding:32px 20px;display:none;}
+.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--blue),var(--cyan));border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;}
+.brand-text{font-size:15px;font-weight:600;}
+.brand-sub{font-size:10px;color:var(--text3);font-family:var(--mono);}
+.btn-out{padding:7px 14px;background:transparent;border:1px solid var(--border2);color:var(--text3);border-radius:8px;cursor:pointer;font-family:var(--sans);font-size:12px;}
+
+.welcome{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.welcome-left h1{font-size:20px;font-weight:700;}
+.welcome-left p{font-size:13px;color:var(--text3);margin-top:4px;font-family:var(--mono);}
+.plan-pill{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;font-family:var(--mono);}
+.plan-basico{background:rgba(96,165,250,0.15);color:var(--blue-light);border:1px solid rgba(96,165,250,0.3);}
+.plan-pro{background:rgba(56,189,248,0.15);color:var(--cyan);border:1px solid rgba(56,189,248,0.3);}
+.plan-elite{background:rgba(167,139,250,0.15);color:#a78bfa;border:1px solid rgba(167,139,250,0.3);}
+
+.status-bar{display:flex;align-items:center;gap:8px;padding:12px 20px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:10px;margin-bottom:24px;}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.status-text{font-size:13px;color:var(--green);font-weight:500;}
+.status-url{margin-left:auto;font-size:12px;color:var(--text3);font-family:var(--mono);}
+.status-url a{color:var(--cyan);text-decoration:none;}
+
+.metrics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}
+.metric-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;overflow:hidden;}
+.metric-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent,var(--blue));}
+.metric-card.g{--accent:var(--green);}
+.metric-card.c{--accent:var(--cyan);}
+.metric-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-family:var(--mono);margin-bottom:10px;}
+.metric-val{font-size:32px;font-weight:700;letter-spacing:-1px;}
+.metric-val.blue{color:var(--blue-light);}
+.metric-val.green{color:var(--green);}
+.metric-val.cyan{color:var(--cyan);}
+.metric-sub{font-size:11px;color:var(--text3);margin-top:6px;font-family:var(--mono);}
+
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;}
+.panel-head{padding:16px 20px;border-bottom:1px solid var(--border);font-size:13px;font-weight:600;}
+.panel-body{padding:20px;}
+
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.info-item{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;}
+.info-item .val{font-size:15px;font-weight:600;}
+.info-item .lbl{font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:3px;}
+
+.cta-box{background:linear-gradient(135deg,rgba(37,99,235,0.15),rgba(56,189,248,0.1));border:1px solid rgba(37,99,235,0.3);border-radius:12px;padding:24px;text-align:center;}
+.cta-box h3{font-size:16px;font-weight:700;margin-bottom:6px;}
+.cta-box p{font-size:13px;color:var(--text3);margin-bottom:16px;}
+.btn-wa{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:#25D366;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--sans);text-decoration:none;transition:all 0.15s;}
+.btn-wa:hover{background:#1db954;transform:translateY(-1px);}
+
+.no-data{padding:30px;text-align:center;color:var(--text3);font-size:12px;font-family:var(--mono);}
+
+@media(max-width:600px){.metrics-grid{grid-template-columns:1fr 1fr;}.info-grid{grid-template-columns:1fr;}.welcome{flex-direction:column;align-items:flex-start;}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-box">
+    <div class="logo-ring">NW</div>
+    <h2>Tu portal de cliente</h2>
+    <p class="sub">Nexweb Studio · Ingresa tu código</p>
+    <div class="code-input-wrap" id="codeInputs"></div>
+    <button class="login-btn" onclick="doAccess()">Acceder →</button>
+    <div class="login-hint">Código de 6 caracteres · Juan te lo compartió</div>
+    <div class="login-error" id="loginError">Código incorrecto. Verifica con Juan.</div>
+  </div>
+</div>
+
+<!-- PORTAL -->
+<div class="app" id="appWrap">
+  <div class="top-bar">
+    <div class="brand">
+      <div class="brand-icon">NW</div>
+      <div>
+        <div class="brand-text">Nexweb Studio</div>
+        <div class="brand-sub">portal de cliente</div>
+      </div>
+    </div>
+    <button class="btn-out" onclick="logout()">Salir</button>
+  </div>
+
+  <div class="welcome">
+    <div class="welcome-left">
+      <h1 id="bizName">—</h1>
+      <p id="bizType">—</p>
+    </div>
+    <span class="plan-pill" id="planPill">—</span>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-dot"></div>
+    <span class="status-text">Tu página está en línea</span>
+    <span class="status-url" id="bizUrl"></span>
+  </div>
+
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-label">Visitas este mes</div>
+      <div class="metric-val blue" id="mVisits">—</div>
+      <div class="metric-sub">personas llegaron a tu sitio</div>
+    </div>
+    <div class="metric-card g">
+      <div class="metric-label">Clics en WhatsApp</div>
+      <div class="metric-val green" id="mWA">—</div>
+      <div class="metric-sub">clientes potenciales</div>
+    </div>
+    <div class="metric-card c">
+      <div class="metric-label">Conversión</div>
+      <div class="metric-val cyan" id="mConv">—</div>
+      <div class="metric-sub">visitas → contacto</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">📋 Detalles de tu servicio</div>
+    <div class="panel-body">
+      <div class="info-grid">
+        <div class="info-item"><div class="val" id="dPlan">—</div><div class="lbl">Plan activo</div></div>
+        <div class="info-item"><div class="val" id="dPrice">—</div><div class="lbl">Mensualidad</div></div>
+        <div class="info-item"><div class="val" id="dSince">—</div><div class="lbl">Cliente desde</div></div>
+        <div class="info-item"><div class="val" id="dStatus">—</div><div class="lbl">Estado</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-box">
+    <h3>¿Necesitas algo? 💬</h3>
+    <p>Cambios en la página, actualizar información, agregar sección — escríbele a Juan directo por WhatsApp</p>
+    <a class="btn-wa" href="https://wa.me/12148011100?text=Hola%20Juan%2C%20soy%20cliente%20de%20Nexweb%20Studio.%20Necesito%20ayuda%20con%20mi%20página." target="_blank">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      WhatsApp a Juan
+    </a>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://tsrbfazdcpbvufqtnvtx.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRzcmJmYXpkY3BidnVmcXRudnR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5MDUxOTUsImV4cCI6MjA4ODQ4MTE5NX0.0IcZI-9dorqHYuuKZ_2CdhlssPYjFBnCNWCb_yIK5FU';
+const PLAN_PRICE = {basico:199,pro:399,elite:699};
+const PLAN_NAMES = {basico:'Plan Básico',pro:'Plan Pro',elite:'Plan Elite'};
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Build code input boxes
+const codeWrap = document.getElementById('codeInputs');
+for(let i=0;i<6;i++){
+  const inp = document.createElement('input');
+  inp.className='code-char'; inp.maxLength=1; inp.dataset.idx=i;
+  inp.addEventListener('input',e=>{
+    e.target.value=e.target.value.toUpperCase();
+    if(e.target.value && i<5) codeWrap.children[i+1].focus();
+  });
+  inp.addEventListener('keydown',e=>{
+    if(e.key==='Backspace'&&!e.target.value&&i>0) codeWrap.children[i-1].focus();
+    if(e.key==='Enter') doAccess();
+  });
+  inp.addEventListener('paste',e=>{
+    const txt=(e.clipboardData.getData('text')).replace(/\s/g,'').toUpperCase().slice(0,6);
+    [...txt].forEach((c,j)=>{if(codeWrap.children[j])codeWrap.children[j].value=c;});
+    e.preventDefault();
+    const last=Math.min(txt.length,5);
+    codeWrap.children[last].focus();
+  });
+  codeWrap.appendChild(inp);
+}
+codeWrap.children[0].focus();
+
+async function doAccess(){
+  const code=[...codeWrap.children].map(c=>c.value).join('').toUpperCase();
+  if(code.length<6){alert('Ingresa los 6 caracteres');return;}
+  const {data,error}=await sb.from('clients').select('*').eq('access_code',code).single();
+  if(error||!data){
+    document.getElementById('loginError').style.display='block';
+    [...codeWrap.children].forEach(c=>c.value='');
+    codeWrap.children[0].focus();
+    return;
+  }
+  showPortal(data);
+}
+
+async function showPortal(client){
+  document.getElementById('loginWrap').style.display='none';
+  document.getElementById('appWrap').style.display='block';
+  
+  // Info
+  document.getElementById('bizName').textContent=client.name;
+  document.getElementById('bizType').textContent=client.type;
+  const pill=document.getElementById('planPill');
+  pill.textContent=PLAN_NAMES[client.plan];
+  pill.className='plan-pill plan-'+client.plan;
+  
+  // URL
+  const urlEl=document.getElementById('bizUrl');
+  if(client.url){
+    const href=client.url.startsWith('http')?client.url:'https://'+client.url;
+    urlEl.innerHTML=`<a href="${href}" target="_blank">${client.url} ↗</a>`;
+  }
+  
+  // Details
+  document.getElementById('dPlan').textContent=PLAN_NAMES[client.plan];
+  document.getElementById('dPrice').textContent='$'+PLAN_PRICE[client.plan]+'/mes';
+  document.getElementById('dSince').textContent=new Date(client.since).toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('dStatus').textContent=client.status==='activo'?'🟢 En línea':'🔴 Suspendido';
+  
+  // Metrics
+  const month=new Date().toISOString().slice(0,7);
+  const {data:metrics}=await sb.from('metrics').select('*').eq('client_id',client.id).eq('month',month).single();
+  if(metrics){
+    document.getElementById('mVisits').textContent=metrics.visits.toLocaleString('es-MX');
+    document.getElementById('mWA').textContent=metrics.whatsapp_clicks.toLocaleString('es-MX');
+    const conv=metrics.visits>0?((metrics.whatsapp_clicks/metrics.visits)*100).toFixed(1)+'%':'—';
+    document.getElementById('mConv').textContent=conv;
+  } else {
+    document.getElementById('mVisits').textContent='—';
+    document.getElementById('mWA').textContent='—';
+    document.getElementById('mConv').textContent='—';
+  }
+}
+
+function logout(){
+  document.getElementById('loginWrap').style.display='flex';
+  document.getElementById('appWrap').style.display='none';
+  [...codeWrap.children].forEach(c=>c.value='');
+  codeWrap.children[0].focus();
+}
+</script>
+</body>
+</html>
