@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NexWeb Network — Estadísticas del ecosistema</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:#04060d;color:#f0f4ff;min-height:100vh;}
+nav{position:sticky;top:0;z-index:100;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;background:rgba(4,6,13,0.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(96,165,250,0.1);}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.1em;background:linear-gradient(90deg,#60a5fa,#22d3ee,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;}
+.hero{padding:60px 24px 40px;text-align:center;max-width:700px;margin:0 auto;}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:999px;font-size:12px;color:#22c55e;font-family:'JetBrains Mono',monospace;margin-bottom:20px;}
+.dot{width:7px;height:7px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+h1{font-size:clamp(26px,4vw,44px);font-weight:700;margin-bottom:14px;line-height:1.2;}
+h1 span{background:linear-gradient(90deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.sub{font-size:14px;color:#94a3b8;line-height:1.6;}
+.stats-mega{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;padding:0 24px 40px;max-width:900px;margin:0 auto;}
+.stat-card{background:#0a0f1e;border:1px solid #1a2540;border-radius:16px;padding:24px;text-align:center;}
+.stat-num{font-size:42px;font-weight:700;font-family:'Bebas Neue',sans-serif;line-height:1;}
+.stat-label{font-size:11px;color:#475569;font-family:'JetBrains Mono',monospace;margin-top:6px;}
+.section{max-width:900px;margin:0 auto;padding:0 24px 40px;}
+.sec-title{font-size:13px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:2px;font-family:'JetBrains Mono',monospace;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid #1a2540;}
+.top-list{display:flex;flex-direction:column;gap:10px;}
+.top-item{display:flex;align-items:center;gap:14px;background:#0a0f1e;border:1px solid #1a2540;border-radius:12px;padding:14px 18px;}
+.top-rank{font-size:20px;font-weight:700;font-family:'Bebas Neue',sans-serif;color:#475569;width:28px;text-align:center;flex-shrink:0;}
+.top-icon{font-size:22px;flex-shrink:0;}
+.top-name{font-size:14px;font-weight:600;flex:1;}
+.top-type{font-size:11px;color:#475569;font-family:'JetBrains Mono',monospace;}
+.top-badge{padding:4px 10px;border-radius:20px;font-size:10px;font-family:'JetBrains Mono',monospace;}
+.plan-bar{height:6px;border-radius:3px;margin-top:6px;}
+.network-flow{background:#0a0f1e;border:1px solid #1a2540;border-radius:16px;padding:28px;text-align:center;margin-bottom:40px;}
+.flow-num{font-size:52px;font-weight:700;font-family:'Bebas Neue',sans-serif;background:linear-gradient(90deg,#22c55e,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;}
+.flow-label{font-size:13px;color:#94a3b8;margin-top:8px;}
+.cta-join{display:block;text-align:center;padding:16px 36px;background:linear-gradient(135deg,#1d4ed8,#2563eb);border-radius:12px;color:#fff;text-decoration:none;font-weight:700;font-size:15px;max-width:360px;margin:0 auto 60px;box-shadow:0 8px 24px rgba(37,99,235,0.4);}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Nexweb Studio</a>
+  <div style="display:flex;gap:8px;">
+    <a href="discover.html" style="padding:7px 16px;background:transparent;border:1px solid rgba(167,139,250,0.3);color:#a78bfa;border-radius:999px;font-size:13px;font-weight:600;text-decoration:none;">🌐 Directorio</a>
+    <a href="https://wa.me/12148011100?text=Hola%20Juan%2C%20quiero%20unirme%20a%20la%20red" target="_blank" style="padding:7px 16px;background:linear-gradient(135deg,#1d4ed8,#2563eb);color:#fff;border-radius:999px;font-size:13px;font-weight:600;text-decoration:none;">🚀 Unirme</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="badge"><div class="dot"></div>Red activa · actualizado en tiempo real</div>
+  <h1>El ecosistema<br/><span>NexWeb en números</span></h1>
+  <p class="sub">Cada negocio que se une fortalece la red completa. Así van creciendo juntos.</p>
+</div>
+
+<div class="stats-mega" id="statsGrid">
+  <div class="stat-card" style="border-top:2px solid #22c55e;"><div class="stat-num" style="color:#22c55e;" id="sTotal">—</div><div class="stat-label">Negocios en la red</div></div>
+  <div class="stat-card" style="border-top:2px solid #f59e0b;"><div class="stat-num" style="color:#f59e0b;" id="sFounders">—</div><div class="stat-label">Fundadores</div></div>
+  <div class="stat-card" style="border-top:2px solid #60a5fa;"><div class="stat-num" style="color:#60a5fa;" id="sCities">—</div><div class="stat-label">Ciudades</div></div>
+  <div class="stat-card" style="border-top:2px solid #a78bfa;"><div class="stat-num" style="color:#a78bfa;" id="sCategories">—</div><div class="stat-label">Categorías</div></div>
+</div>
+
+<div class="section">
+  <div class="network-flow">
+    <div class="flow-num" id="sNetTraffic">0</div>
+    <div class="flow-label">Visitas generadas dentro de la red este mes</div>
+  </div>
+
+  <div class="sec-title">🏆 Fundadores de la red</div>
+  <div class="top-list" id="foundersList">
+    <div style="padding:20px;text-align:center;color:#475569;font-size:12px;font-family:'JetBrains Mono',monospace;">Cargando...</div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="sec-title">📊 Distribución por plan</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:40px;">
+    <div style="background:#0a0f1e;border:1px solid #1a2540;border-radius:12px;padding:20px;text-align:center;">
+      <div style="font-size:32px;font-weight:700;color:#60a5fa;font-family:'Bebas Neue',sans-serif;" id="pBasico">0</div>
+      <div style="font-size:11px;color:#475569;margin-top:4px;font-family:'JetBrains Mono',monospace;">🌱 Básico</div>
+    </div>
+    <div style="background:#0a0f1e;border:1px solid #1a2540;border-radius:12px;padding:20px;text-align:center;">
+      <div style="font-size:32px;font-weight:700;color:#38bdf8;font-family:'Bebas Neue',sans-serif;" id="pPro">0</div>
+      <div style="font-size:11px;color:#475569;margin-top:4px;font-family:'JetBrains Mono',monospace;">⚡ Pro</div>
+    </div>
+    <div style="background:#0a0f1e;border:1px solid #1a2540;border-radius:12px;padding:20px;text-align:center;">
+      <div style="font-size:32px;font-weight:700;color:#a78bfa;font-family:'Bebas Neue',sans-serif;" id="pElite">0</div>
+      <div style="font-size:11px;color:#475569;margin-top:4px;font-family:'JetBrains Mono',monospace;">👑 Elite</div>
+    </div>
+  </div>
+</div>
+
+<a href="https://wa.me/12148011100?text=Hola%20Juan%2C%20quiero%20unirme%20a%20la%20red%20NexWeb" class="cta-join" target="_blank">🚀 Quiero unirme a la red</a>
+
+<script>
+const SB_URL='https://tsrbfazdcpbvufqtnvtx.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRzcmJmYXpkY3BidnVmcXRudnR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5MDUxOTUsImV4cCI6MjA4ODQ4MTE5NX0.0IcZI-9dorqHYuuKZ_2CdhlssPYjFBnCNWCb_yIK5FU';
+const sb=supabase.createClient(SB_URL,SB_KEY);
+
+const ICONS={barbería:'✂️',barberia:'✂️',gym:'💪',calistenia:'💪',fitness:'💪',restaurante:'🍽️',comida:'🍽️',spa:'🧖',salud:'🏥',música:'🎵',musica:'🎵',eventos:'🎉'};
+function getIcon(t){const tl=(t||'').toLowerCase();for(const k in ICONS)if(tl.includes(k))return ICONS[k];return'🏢';}
+
+async function load(){
+  const {data:clients}=await sb.from('clients').select('*').eq('status','activo').order('is_founder',{ascending:false}).order('created_at',{ascending:true});
+  const all=clients||[];
+
+  document.getElementById('sTotal').textContent=all.length;
+  document.getElementById('sFounders').textContent=all.filter(c=>c.is_founder).length;
+  document.getElementById('sCities').textContent=[...new Set(all.map(c=>c.city).filter(Boolean))].length;
+  document.getElementById('sCategories').textContent=[...new Set(all.map(c=>c.type).filter(Boolean))].length;
+  document.getElementById('pBasico').textContent=all.filter(c=>c.plan==='basico').length;
+  document.getElementById('pPro').textContent=all.filter(c=>c.plan==='pro').length;
+  document.getElementById('pElite').textContent=all.filter(c=>c.plan==='elite').length;
+
+  // Network traffic total
+  const month=new Date().toISOString().slice(0,7);
+  const {data:metrics}=await sb.from('metrics').select('network_traffic').eq('month',month);
+  const total=(metrics||[]).reduce((s,m)=>s+(m.network_traffic||0),0);
+  document.getElementById('sNetTraffic').textContent=total.toLocaleString('es-MX');
+
+  // Founders list
+  const founders=all.filter(c=>c.is_founder);
+  const planColors={basico:'#60a5fa',pro:'#38bdf8',elite:'#a78bfa'};
+  document.getElementById('foundersList').innerHTML=founders.length?founders.map((c,i)=>`
+    <div class="top-item">
+      <div class="top-rank">${i+1}</div>
+      <div class="top-icon">${getIcon(c.type)}</div>
+      <div style="flex:1;min-width:0;">
+        <div class="top-name">${c.name}</div>
+        <div class="top-type">${c.type||''} ${c.city?'· '+c.city:''}</div>
+      </div>
+      <span class="top-badge" style="background:rgba(245,158,11,0.12);color:#f59e0b;border:1px solid rgba(245,158,11,0.25);">⭐ Fundador</span>
+    </div>
+  `).join(''):'<div style="padding:20px;text-align:center;color:#475569;font-size:12px;font-family:\'JetBrains Mono\',monospace;">Aún no hay fundadores registrados</div>';
+}
+
+load();
+</script>
+</body>
+</html>
