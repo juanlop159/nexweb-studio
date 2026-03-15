@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Directorio de Negocios — NexWeb Network</title>
+<meta name="description" content="Descubre negocios mexicanos verificados en la red NexWeb. Barberías, gyms, restaurantes, spas y más en Monterrey y todo México."/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:#04060d;color:#f0f4ff;min-height:100vh;}
+nav{position:sticky;top:0;z-index:100;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;background:rgba(4,6,13,0.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(96,165,250,0.1);}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.1em;background:linear-gradient(90deg,#60a5fa,#22d3ee,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;}
+.hero-disc{padding:60px 24px 40px;text-align:center;max-width:700px;margin:0 auto;}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.3);border-radius:999px;font-size:12px;color:#a78bfa;font-family:'JetBrains Mono',monospace;margin-bottom:20px;}
+h1{font-size:clamp(28px,5vw,48px);font-weight:700;line-height:1.15;margin-bottom:14px;}
+h1 span{background:linear-gradient(90deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.sub{font-size:15px;color:#94a3b8;line-height:1.6;margin-bottom:32px;}
+.search-bar{display:flex;gap:10px;max-width:500px;margin:0 auto 40px;}
+.search-input{flex:1;background:#0a0f1e;border:1px solid #243050;border-radius:12px;padding:12px 18px;color:#f0f4ff;font-size:14px;font-family:'Space Grotesk',sans-serif;outline:none;}
+.search-input:focus{border-color:#2563eb;}
+.cats{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:40px;padding:0 24px;}
+.cat-chip{padding:7px 16px;background:#0a0f1e;border:1px solid #1a2540;border-radius:999px;font-size:12px;color:#94a3b8;cursor:pointer;transition:all 0.15s;font-family:'JetBrains Mono',monospace;}
+.cat-chip:hover,.cat-chip.active{background:rgba(37,99,235,0.15);border-color:rgba(37,99,235,0.4);color:#60a5fa;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;padding:0 24px 60px;max-width:1200px;margin:0 auto;}
+.card{background:#0a0f1e;border:1px solid #1a2540;border-radius:16px;overflow:hidden;transition:all 0.2s;cursor:pointer;text-decoration:none;color:inherit;display:block;}
+.card:hover{border-color:#2563eb;transform:translateY(-2px);box-shadow:0 12px 32px rgba(37,99,235,0.15);}
+.card-top{padding:20px 20px 14px;display:flex;align-items:flex-start;gap:14px;}
+.card-icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;background:linear-gradient(135deg,#1a2540,#243050);}
+.card-meta{flex:1;min-width:0;}
+.card-name{font-size:15px;font-weight:700;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.card-type{font-size:11px;color:#475569;font-family:'JetBrains Mono',monospace;}
+.card-city{font-size:11px;color:#475569;margin-top:2px;}
+.card-body{padding:0 20px 16px;}
+.founder-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.25);border-radius:20px;font-size:10px;color:#f59e0b;font-family:'JetBrains Mono',monospace;margin-bottom:10px;}
+.card-footer{padding:12px 20px;border-top:1px solid #1a2540;display:flex;align-items:center;justify-content:space-between;}
+.visit-btn{padding:7px 14px;background:#2563eb;border-radius:8px;font-size:12px;color:#fff;font-weight:600;}
+.net-badge{font-size:10px;color:#a78bfa;font-family:'JetBrains Mono',monospace;}
+.empty{text-align:center;padding:60px 24px;color:#475569;}
+.stats-bar{display:flex;justify-content:center;gap:32px;padding:20px 24px 40px;flex-wrap:wrap;}
+.stat{text-align:center;}
+.stat-num{font-size:28px;font-weight:700;font-family:'Bebas Neue',sans-serif;background:linear-gradient(90deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.stat-label{font-size:11px;color:#475569;font-family:'JetBrains Mono',monospace;}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Nexweb Studio</a>
+  <div style="display:flex;gap:8px;">
+    <a href="index.html" style="padding:7px 16px;background:transparent;border:1px solid rgba(96,165,250,0.3);color:#60a5fa;border-radius:999px;font-size:13px;font-weight:600;text-decoration:none;">← Inicio</a>
+    <a href="https://wa.me/12148011100?text=Hola%20Juan%2C%20quiero%20unirme%20a%20la%20red%20NexWeb" target="_blank" style="padding:7px 16px;background:linear-gradient(135deg,#1d4ed8,#2563eb);color:#fff;border-radius:999px;font-size:13px;font-weight:600;text-decoration:none;">🚀 Unirme a la red</a>
+  </div>
+</nav>
+
+<div class="hero-disc">
+  <div class="badge">🌐 NexWeb Network</div>
+  <h1>Negocios mexicanos<br/><span>verificados y en línea</span></h1>
+  <p class="sub">Descubre negocios reales que forman parte de la red NexWeb. Cada uno tiene presencia web profesional, IA y está listo para atenderte.</p>
+  <div class="search-bar">
+    <input class="search-input" id="searchInput" placeholder="Busca un negocio, giro o ciudad..." oninput="filterCards()"/>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stat"><div class="stat-num" id="statTotal">0</div><div class="stat-label">Negocios en la red</div></div>
+  <div class="stat"><div class="stat-num" id="statFounders">0</div><div class="stat-label">Fundadores</div></div>
+  <div class="stat"><div class="stat-num" id="statCities">0</div><div class="stat-label">Ciudades</div></div>
+</div>
+
+<div class="cats" id="catBar">
+  <span class="cat-chip active" onclick="filterCat('',this)">🌐 Todos</span>
+</div>
+
+<div class="grid" id="bizGrid">
+  <div class="empty" style="grid-column:1/-1;">Cargando negocios...</div>
+</div>
+
+<script>
+const SB_URL='https://tsrbfazdcpbvufqtnvtx.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRzcmJmYXpkY3BidnVmcXRudnR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5MDUxOTUsImV4cCI6MjA4ODQ4MTE5NX0.0IcZI-9dorqHYuuKZ_2CdhlssPYjFBnCNWCb_yIK5FU';
+const sb=supabase.createClient(SB_URL,SB_KEY);
+
+const ICONS={
+  'barbería':'✂️','barberia':'✂️','gym':'💪','calistenia':'💪','fitness':'💪',
+  'restaurante':'🍽️','comida':'🍽️','tacos':'🌮','spa':'🧖','salud':'🏥',
+  'clínica':'🏥','clinica':'🏥','música':'🎵','musica':'🎵','eventos':'🎉',
+  'tienda':'🛍️','boutique':'👗','dental':'🦷','café':'☕','cafe':'☕'
+};
+function getIcon(type){
+  const t=(type||'').toLowerCase();
+  for(const k in ICONS) if(t.includes(k)) return ICONS[k];
+  return '🏢';
+}
+
+let allBiz=[], currentCat='';
+
+async function loadBiz(){
+  const {data}=await sb.from('clients').select('*').eq('status','activo').order('is_founder',{ascending:false}).order('created_at',{ascending:true});
+  allBiz=data||[];
+  // Stats
+  document.getElementById('statTotal').textContent=allBiz.length;
+  document.getElementById('statFounders').textContent=allBiz.filter(b=>b.is_founder).length;
+  const cities=[...new Set(allBiz.map(b=>b.city).filter(Boolean))];
+  document.getElementById('statCities').textContent=cities.length;
+  // Categories
+  const types=[...new Set(allBiz.map(b=>b.type).filter(Boolean))];
+  const catBar=document.getElementById('catBar');
+  types.forEach(t=>{
+    const chip=document.createElement('span');
+    chip.className='cat-chip';
+    chip.textContent=getIcon(t)+' '+t;
+    chip.onclick=()=>filterCat(t,chip);
+    catBar.appendChild(chip);
+  });
+  renderGrid(allBiz);
+}
+
+function renderGrid(list){
+  const grid=document.getElementById('bizGrid');
+  if(!list.length){
+    grid.innerHTML='<div class="empty" style="grid-column:1/-1;">No se encontraron negocios con ese filtro 🔍</div>';
+    return;
+  }
+  grid.innerHTML=list.map((b,i)=>`
+    <a class="card" href="${b.url?(b.url.startsWith('http')?b.url:'https://'+b.url):'#'}" target="_blank">
+      <div class="card-top">
+        <div class="card-icon">${getIcon(b.type)}</div>
+        <div class="card-meta">
+          <div class="card-name">${b.name}</div>
+          <div class="card-type">${b.type||'Negocio'}</div>
+          <div class="card-city">📍 ${b.city||'México'}</div>
+        </div>
+      </div>
+      <div class="card-body">
+        ${b.is_founder?'<div class="founder-badge">⭐ Fundador NexWeb</div>':''}
+        <div style="font-size:11px;color:#475569;font-family:\'JetBrains Mono\',monospace;">#${i+1} en la red · ${b.plan==='elite'?'👑 Elite':b.plan==='pro'?'⚡ Pro':'🌱 Básico'}</div>
+      </div>
+      <div class="card-footer">
+        <span class="net-badge">● NexWeb Verified</span>
+        <span class="visit-btn">Ver página →</span>
+      </div>
+    </a>
+  `).join('');
+}
+
+function filterCat(cat,el){
+  currentCat=cat;
+  document.querySelectorAll('.cat-chip').forEach(c=>{c.classList.remove('active');});
+  el.classList.add('active');
+  applyFilters();
+}
+
+function filterCards(){applyFilters();}
+
+function applyFilters(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  let filtered=allBiz;
+  if(currentCat) filtered=filtered.filter(b=>(b.type||'').toLowerCase().includes(currentCat.toLowerCase()));
+  if(q) filtered=filtered.filter(b=>(b.name+b.type+b.city||'').toLowerCase().includes(q));
+  renderGrid(filtered);
+}
+
+loadBiz();
+</script>
+</body>
+</html>
