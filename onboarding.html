@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>NexWeb — Tu nueva página web</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f5f5f7;
+  --white: #ffffff;
+  --text: #1d1d1f;
+  --text2: #424245;
+  --muted: #6e6e73;
+  --muted2: #aeaeb2;
+  --border: rgba(0,0,0,0.09);
+  --border-focus: #0071e3;
+  --blue: #0071e3;
+  --blue-light: rgba(0,113,227,0.08);
+  --blue-mid: rgba(0,113,227,0.15);
+  --green: #34c759;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.05);
+  --shadow-md: 0 2px 8px rgba(0,0,0,0.06), 0 12px 40px rgba(0,0,0,0.08);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,0.06), 0 24px 60px rgba(0,0,0,0.12);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-pill: 999px;
+  --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── NOISE TEXTURE (subtle) ── */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 999; opacity: 0.6;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  position: relative; z-index: 10;
+  height: 52px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px;
+  background: rgba(245,245,247,0.85);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.logo {
+  font-size: 16px; font-weight: 700; letter-spacing: -0.02em;
+  color: var(--text);
+}
+.logo span { color: var(--blue); }
+
+/* Progress bar */
+.progress-bar-wrap {
+  flex: 1; max-width: 200px; margin: 0 24px;
+}
+.progress-bar-track {
+  height: 3px; background: rgba(0,0,0,0.08); border-radius: 99px; overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue), #34aadc);
+  border-radius: 99px;
+  transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+  width: 5%;
+}
+.progress-label {
+  font-size: 11px; color: var(--muted); font-weight: 500;
+  margin-top: 5px; text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── LAYOUT ── */
+.main {
+  display: flex; flex: 1; overflow: hidden;
+  position: relative;
+}
+
+/* ── SIDE PANEL ── */
+.side-panel {
+  width: 260px; flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  padding: 24px 20px;
+  overflow-y: auto;
+  background: rgba(255,255,255,0.6);
+  display: flex; flex-direction: column; gap: 10px;
+}
+.side-panel::-webkit-scrollbar { width: 0; }
+
+.sp-title {
+  font-size: 11px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.1em;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2px;
+}
+.sp-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: var(--shadow-sm);
+}
+.sp-card.active {
+  border-color: rgba(0,113,227,0.25);
+  background: rgba(0,113,227,0.03);
+}
+.sp-card-label {
+  font-size: 10px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+.sp-card-val {
+  font-size: 12px; font-weight: 500; color: var(--muted2);
+  line-height: 1.5; min-height: 15px;
+  transition: all 0.3s;
+}
+.sp-card-val.filled {
+  color: var(--text);
+  animation: valPop 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes valPop { from { opacity:0; transform:translateY(3px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── CHAT ── */
+.chat {
+  flex: 1; display: flex; flex-direction: column; overflow: hidden;
+  background: var(--bg);
+}
+
+.messages {
+  flex: 1; overflow-y: auto;
+  padding: 32px 24px 16px;
+  display: flex; flex-direction: column; gap: 20px;
+  scroll-behavior: smooth;
+}
+.messages::-webkit-scrollbar { width: 0; }
+
+/* AI bubble */
+.row-ai {
+  display: flex; align-items: flex-end; gap: 10px;
+  max-width: 76%;
+  animation: msgIn 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+@keyframes msgIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+.ai-avatar {
+  width: 32px; height: 32px; flex-shrink: 0;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #0055b3, #0071e3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800; color: #fff;
+  box-shadow: 0 2px 10px rgba(0,113,227,0.3);
+  letter-spacing: -0.02em;
+}
+.ai-bubble {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 18px 18px 18px 4px;
+  padding: 14px 18px;
+  font-size: 15px; line-height: 1.65; color: var(--text);
+  box-shadow: var(--shadow-md);
+  font-weight: 400;
+}
+.ai-bubble strong { font-weight: 700; color: var(--text); }
+
+/* User bubble */
+.row-user {
+  display: flex; justify-content: flex-end;
+  animation: msgIn 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+.user-bubble {
+  background: var(--blue);
+  border-radius: 18px 18px 4px 18px;
+  padding: 13px 18px;
+  font-size: 15px; line-height: 1.55; color: #fff;
+  max-width: 72%;
+  box-shadow: 0 4px 16px rgba(0,113,227,0.25);
+  font-weight: 400;
+}
+
+/* Typing */
+.row-typing {
+  display: flex; align-items: flex-end; gap: 10px;
+  max-width: 76%;
+  animation: msgIn 0.3s ease;
+}
+.typing-bub {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 18px 18px 18px 4px;
+  padding: 14px 20px;
+  display: flex; align-items: center; gap: 5px;
+  box-shadow: var(--shadow-md);
+}
+.td {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--muted2);
+  animation: tdBounce 1.2s ease-in-out infinite;
+}
+.td:nth-child(2) { animation-delay: 0.15s; }
+.td:nth-child(3) { animation-delay: 0.3s; }
+@keyframes tdBounce {
+  0%,60%,100% { transform: translateY(0); background: var(--muted2); }
+  30% { transform: translateY(-8px); background: var(--blue); }
+}
+
+/* ── QUICK REPLIES ── */
+.chips-wrap {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  padding: 4px 24px 14px 66px;
+}
+.chip {
+  padding: 8px 16px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  font-size: 13px; font-weight: 500; color: var(--blue);
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: var(--shadow-sm);
+  animation: chipIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+  user-select: none;
+}
+.chip:hover {
+  background: var(--blue-light);
+  border-color: rgba(0,113,227,0.3);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.chip:active { transform: scale(0.96); }
+@keyframes chipIn { from { opacity:0; transform:scale(0.7); } to { opacity:1; transform:scale(1); } }
+
+/* ── INPUT ── */
+.input-wrap-outer {
+  padding: 10px 24px 28px;
+  border-top: 1px solid var(--border);
+  background: rgba(245,245,247,0.9);
+  backdrop-filter: blur(20px);
+  flex-shrink: 0;
+}
+.input-row {
+  display: flex; align-items: flex-end; gap: 10px;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 18px;
+  padding: 10px 10px 10px 18px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+.input-row:focus-within {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 4px rgba(0,113,227,0.1), var(--shadow-sm);
+}
+#userInput {
+  flex: 1; background: transparent; border: none; outline: none;
+  color: var(--text); font-size: 15px;
+  font-family: var(--font); font-weight: 400;
+  resize: none; max-height: 120px; line-height: 1.5;
+  padding: 3px 0;
+}
+#userInput::placeholder { color: var(--muted2); }
+.send-btn {
+  width: 38px; height: 38px; flex-shrink: 0;
+  background: var(--blue);
+  border: none; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: 0 2px 8px rgba(0,113,227,0.3);
+}
+.send-btn:hover { background: #0077ed; transform: scale(1.05); box-shadow: 0 4px 14px rgba(0,113,227,0.4); }
+.send-btn:active { transform: scale(0.95); }
+.send-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; box-shadow: none; }
+.send-btn svg { width: 16px; height: 16px; fill: white; }
+.input-hint { font-size: 11px; color: var(--muted2); text-align: center; margin-top: 7px; }
+
+/* ── SUMMARY CARD ── */
+.sum-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px;
+  margin: 0 4px 20px;
+  box-shadow: var(--shadow-lg);
+  animation: msgIn 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+.sum-eyebrow { font-size: 12px; color: var(--blue); font-weight: 600; letter-spacing: 0.03em; margin-bottom: 6px; }
+.sum-title { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; color: var(--text); }
+.sum-sub { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 22px; }
+.sum-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 22px; }
+.si { background: var(--bg); border-radius: var(--radius-sm); padding: 11px 14px; }
+.si-l { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 3px; }
+.si-v { font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.4; }
+.sum-wa {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 16px;
+  background: #34c759;
+  border: none; border-radius: 14px;
+  color: #fff; font-size: 15px; font-weight: 600;
+  cursor: pointer; font-family: var(--font);
+  text-decoration: none;
+  transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(52,199,89,0.3);
+  letter-spacing: -0.01em;
+}
+.sum-wa:hover { background: #2db84f; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(52,199,89,0.4); }
+.sum-note { font-size: 12px; color: var(--muted); text-align: center; margin-top: 10px; }
+
+/* ── MOBILE ── */
+@media (max-width: 700px) {
+  .side-panel { display: none; }
+  .messages { padding: 24px 16px 12px; }
+  .chips-wrap { padding: 4px 16px 12px 58px; }
+  .input-wrap-outer { padding: 8px 16px 24px; }
+  .row-ai, .row-typing { max-width: 94%; }
+  .user-bubble { max-width: 88%; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="logo">Nex<span>Web</span></div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" id="pbFill"></div>
+    </div>
+    <div class="progress-label" id="pbLabel">Empezando…</div>
+  </div>
+  <div style="font-size:13px;color:var(--muted);font-weight:500;">Tu nueva página web</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- Side panel -->
+  <div class="side-panel">
+    <div class="sp-title">Tu perfil</div>
+    <div class="sp-card" id="spc0"><div class="sp-card-label">Negocio</div><div class="sp-card-val" id="spv0">Esperando…</div></div>
+    <div class="sp-card" id="spc1"><div class="sp-card-label">Tipo · Ciudad</div><div class="sp-card-val" id="spv1">—</div></div>
+    <div class="sp-card" id="spc2"><div class="sp-card-label">Servicios</div><div class="sp-card-val" id="spv2">—</div></div>
+    <div class="sp-card" id="spc3"><div class="sp-card-label">Personalidad</div><div class="sp-card-val" id="spv3">—</div></div>
+    <div class="sp-card" id="spc4"><div class="sp-card-label">Objetivo</div><div class="sp-card-val" id="spv4">—</div></div>
+    <div class="sp-card" id="spc5"><div class="sp-card-label">Diferenciador</div><div class="sp-card-val" id="spv5">—</div></div>
+    <div class="sp-card" id="spc6"><div class="sp-card-label">Contacto</div><div class="sp-card-val" id="spv6">—</div></div>
+  </div>
+
+  <!-- Chat -->
+  <div class="chat">
+    <div class="messages" id="msgs"></div>
+    <div class="chips-wrap" id="chips"></div>
+    <div class="input-wrap-outer">
+      <div class="input-row">
+        <textarea id="userInput" placeholder="Escribe tu respuesta…" rows="1"
+          onkeydown="handleKey(event)" oninput="resize(this)" disabled></textarea>
+        <button class="send-btn" id="sbtn" onclick="send()" disabled>
+          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+      <div class="input-hint">Enter para enviar · Shift+Enter para nueva línea</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const GROQ_KEY = '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';
+const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
+
+const msgsEl = document.getElementById('msgs');
+const inputEl = document.getElementById('userInput');
+const sbtn = document.getElementById('sbtn');
+const chipsEl = document.getElementById('chips');
+
+let history = [], brief = {}, qCount = 0, busy = false, done = false;
+
+// ── PANEL MAP ──
+const PM = { name:0, type:1, city:1, services:2, vibe:3, goal:4, differentiator:5, target:5, whatsapp:6, instagram:6, hours:6 };
+
+// ── SYSTEM PROMPT ──
+const SYS = `Eres el asistente de onboarding de NexWeb Studio. Tu misión: entrevistar al cliente para crear el brief perfecto de su página web.
+
+REGLAS ABSOLUTAS:
+1. Haz UNA sola pregunta por mensaje. Nunca más de una.
+2. Sé natural, cálido y directo. Habla como un amigo experto, no como un formulario.
+3. Adapta CADA pregunta al nicho específico del cliente desde que lo detectas.
+4. Haz entre 8-10 preguntas en total.
+5. SIEMPRE incluye al inicio un JSON con datos extraídos: <!--D:{...}-->
+6. Cuando aplique, incluye al FINAL chips de respuesta rápida: <!--C:op1|op2|op3-->
+
+ADAPTACIÓN POR NICHO (aplica desde la pregunta 2):
+- Barbería/Salón: cortes, fade, barba, precios, walk-in vs citas, cuántos barberos
+- Gym/Calistenia: clases, membresías, horarios, presencial u online, nivel de los alumnos
+- Restaurante: tipo de cocina, 2-3 especialidades, precio por persona, delivery, ambiente
+- Spa/Estética: tratamientos, si es para hombres/mujeres/mixto, precios, si tienen paquetes
+- Boutique/Moda: tipo de ropa, rango de precio, si venden online, marcas que manejan
+- Clínica: especialidades, si aceptan seguros, costo consulta, número de médicos
+- Fotografía: tipo (bodas/comercial/retratos), precio por sesión, entrega, estilo
+- Otros servicios: qué exactamente, zona de cobertura, cómo cobran, tiempo de entrega
+
+FLUJO SUGERIDO (adapta según nicho):
+1. Nombre del negocio + giro (primera pregunta siempre)
+2. Ciudad y colonia
+3. Servicios/productos principales con precios (muy específico al nicho)
+4. Personalidad y vibe para la página
+5. Objetivo principal (citas, WhatsApp, portafolio, venta)
+6. Qué los hace únicos vs la competencia
+7. A quién le venden (edad, perfil del cliente ideal)
+8. Datos de contacto: WhatsApp, Instagram, horario
+9. Si tienen fotos, logo o colores ya definidos
+10. Algo especial que quieran destacar o cualquier detalle extra
+
+CAMPOS JSON disponibles: name, type, city, services, vibe, goal, differentiator, target, whatsapp, instagram, hours, hasLogo, colors, notes
+
+Cuando tengas 8-10 preguntas respondidas, agrega <!--DONE--> al final de tu último mensaje para indicar que el brief está completo.
+
+TONO: Conversacional, cercano, profesional. Usa emojis con moderación. No uses asteriscos para negritas en las preguntas principales.`;
+
+// ── INIT ──
+async function init() {
+  await sleep(400);
+  showTyping();
+  await sleep(950);
+  hideTyping();
+  const opener = '¡Hola! 👋 Soy el asistente de NexWeb Studio.\n\nVoy a hacerte unas preguntas para diseñar la página perfecta para tu negocio — sin tecnicismos, va a ser rápido y fácil.\n\n¿Cómo se llama tu negocio y a qué se dedica?';
+  history.push({ role: 'assistant', content: opener });
+  await typeAI(opener);
+  await sleep(300);
+  showChips(['Tengo una barbería', 'Es un gym o fitness', 'Tengo un restaurante', 'Es un spa o estética', 'Tengo una clínica', 'Vendo ropa / boutique', 'Soy fotógrafo/a', 'Otro negocio']);
+  unlock();
+  setProgress(1, 'Tu negocio');
+}
+
+// ── SEND ──
+async function send() {
+  const txt = inputEl.value.trim();
+  if (!txt || busy || done) return;
+  clearChips();
+  appendUser(txt);
+  history.push({ role: 'user', content: txt });
+  inputEl.value = ''; resize(inputEl);
+  lock(); busy = true; qCount++;
+
+  showTyping();
+  try {
+    const res = await fetch(GROQ_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + GROQ_KEY },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        max_tokens: 480,
+        temperature: 0.72,
+        messages: [{ role: 'system', content: SYS }, ...history]
+      })
+    });
+    const data = await res.json();
+    hideTyping();
+
+    const raw = data.choices?.[0]?.message?.content || 'Disculpa, hubo un error de conexión. ¿Puedes intentar de nuevo?';
+    history.push({ role: 'assistant', content: raw });
+
+    // Extract JSON data
+    const dm = raw.match(/<!--D:(\{.*?\})-->/s);
+    if (dm) { try { const x = JSON.parse(dm[1]); Object.assign(brief, x); updatePanel(x); } catch(e){} }
+
+    // Check done
+    const isDone = /<!--DONE-->/.test(raw) || qCount >= 10;
+
+    // Extract chips
+    const cm = raw.match(/<!--C:(.*?)-->/);
+    const chips = cm ? cm[1].split('|').map(s => s.trim()).filter(Boolean) : [];
+
+    // Clean display text
+    const disp = raw
+      .replace(/<!--D:\{.*?\}-->/gs, '')
+      .replace(/<!--C:.*?-->/g, '')
+      .replace(/<!--DONE-->/g, '')
+      .trim();
+
+    await typeAI(disp);
+
+    if (isDone) { await sleep(700); showSummary(); done = true; }
+    else { if (chips.length) showChips(chips); unlock(); }
+
+    setProgress(Math.min(qCount + 1, 9));
+
+  } catch(e) {
+    hideTyping();
+    appendAI('Hubo un error de conexión. Por favor recarga la página e intenta de nuevo.');
+    unlock();
+  }
+  busy = false;
+}
+
+// ── TYPEWRITER ──
+function typeAI(text) {
+  return new Promise(resolve => {
+    const wrap = document.createElement('div');
+    wrap.className = 'row-ai';
+    const av = document.createElement('div');
+    av.className = 'ai-avatar'; av.textContent = 'N';
+    const bub = document.createElement('div');
+    bub.className = 'ai-bubble';
+    wrap.append(av, bub);
+    msgsEl.appendChild(wrap);
+    scrollB();
+
+    const html = text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n/g, '<br>');
+    const chars = html.split('');
+    let i = 0, out = '', inTag = false;
+    const spd = Math.max(7, Math.min(22, 1400 / chars.length));
+
+    const iv = setInterval(() => {
+      if (i >= chars.length) {
+        clearInterval(iv);
+        bub.innerHTML = html;
+        resolve();
+        return;
+      }
+      const c = chars[i];
+      if (c === '<') inTag = true;
+      out += c;
+      if (c === '>') inTag = false;
+      bub.innerHTML = out + (!inTag ? '<span style="opacity:.3;color:#0071e3">▌</span>' : '');
+      i++;
+      if (i % 5 === 0) scrollB();
+    }, spd);
+
+    setTimeout(() => { clearInterval(iv); bub.innerHTML = html; resolve(); }, spd * chars.length + 100);
+  });
+}
+
+function appendAI(t) {
+  const w = document.createElement('div'); w.className = 'row-ai';
+  w.innerHTML = `<div class="ai-avatar">N</div><div class="ai-bubble">${t.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>`;
+  msgsEl.appendChild(w); scrollB();
+}
+function appendUser(t) {
+  const w = document.createElement('div'); w.className = 'row-user';
+  w.innerHTML = `<div class="user-bubble">${esc(t).replace(/\n/g,'<br>')}</div>`;
+  msgsEl.appendChild(w); scrollB();
+}
+function showTyping() {
+  const el = document.createElement('div'); el.className = 'row-typing'; el.id = 'typing';
+  el.innerHTML = `<div class="ai-avatar">N</div><div class="typing-bub"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;
+  msgsEl.appendChild(el); scrollB();
+}
+function hideTyping() { document.getElementById('typing')?.remove(); }
+
+// ── CHIPS ──
+function showChips(arr) {
+  chipsEl.innerHTML = '';
+  arr.forEach((c, i) => {
+    const el = document.createElement('div');
+    el.className = 'chip';
+    el.style.animationDelay = (i * 0.065) + 's';
+    el.textContent = c;
+    el.onclick = () => { inputEl.value = c; clearChips(); send(); };
+    chipsEl.appendChild(el);
+  });
+}
+function clearChips() { chipsEl.innerHTML = ''; }
+
+// ── PANEL ──
+function updatePanel(data) {
+  for (const [k, v] of Object.entries(data)) {
+    if (!v) continue;
+    const idx = PM[k];
+    if (idx === undefined) continue;
+    const el = document.getElementById('spv' + idx);
+    const card = document.getElementById('spc' + idx);
+    if (!el) continue;
+
+    let val = String(v);
+    if (idx === 1) {
+      const parts = [brief.type, brief.city].filter(Boolean);
+      val = parts.join(' · ') || val;
+    }
+    if (idx === 6) {
+      const parts = [];
+      if (brief.whatsapp) parts.push('📲 ' + brief.whatsapp);
+      if (brief.instagram) parts.push('📸 ' + brief.instagram);
+      if (brief.hours) parts.push('🕐 ' + brief.hours);
+      if (parts.length) val = parts.join('\n');
+    }
+    if (idx === 0 && brief.name) val = brief.name;
+
+    if (el.textContent !== val) {
+      el.textContent = val;
+      el.classList.add('filled');
+      card.classList.add('active');
+    }
+  }
+}
+
+// ── PROGRESS ──
+const PL = ['Empezando…','Tu negocio','Servicios','Personalidad','Objetivos','Tu ventaja','Cliente ideal','Contacto','Últimos detalles','✓ Listo'];
+function setProgress(step, label) {
+  const pct = Math.min((step / 9) * 100, 100);
+  document.getElementById('pbFill').style.width = pct + '%';
+  document.getElementById('pbLabel').textContent = label || PL[Math.min(step, PL.length-1)];
+}
+
+// ── SUMMARY ──
+function showSummary() {
+  setProgress(9, '✓ Perfil completo');
+  document.querySelectorAll('.sp-card').forEach(c => c.classList.add('active'));
+
+  const waMsg = [
+    '🚀 *NUEVO BRIEF NEXWEB*', '',
+    brief.name      ? '*Negocio:* '       + brief.name          : '',
+    brief.type      ? '*Tipo:* '          + brief.type          : '',
+    brief.city      ? '*Ciudad:* '        + brief.city          : '',
+    brief.services  ? '\n*Servicios:* '   + brief.services      : '',
+    brief.vibe      ? '*Vibe:* '          + brief.vibe          : '',
+    brief.goal      ? '*Objetivo:* '      + brief.goal          : '',
+    brief.differentiator ? '*Diferenciador:* ' + brief.differentiator : '',
+    brief.target    ? '*Cliente ideal:* ' + brief.target        : '',
+    brief.whatsapp  ? '\n*WhatsApp:* '    + brief.whatsapp      : '',
+    brief.instagram ? '*Instagram:* '     + brief.instagram     : '',
+    brief.hours     ? '*Horario:* '       + brief.hours         : '',
+    brief.hasLogo   ? '*Logo:* '          + brief.hasLogo       : '',
+    brief.colors    ? '*Colores:* '       + brief.colors        : '',
+    brief.notes     ? '\n*Notas:* '       + brief.notes         : '',
+    '\n*Entrevista:*',
+    ...history.slice(-10).map(m => (m.role==='user'?'Cliente':'NexWeb') + ': ' + m.content.replace(/<!--.*?-->/gs,'').trim())
+  ].filter(Boolean).join('\n');
+
+  const card = document.createElement('div');
+  card.className = 'sum-card';
+  card.innerHTML = `
+    <div class="sum-eyebrow">Brief completo</div>
+    <div class="sum-title">Tu perfil está listo ✨</div>
+    <div class="sum-sub">Juan ya tiene toda la información para diseñar tu página. Dale clic al botón de abajo — te escribirá en menos de 24 horas para arrancamos.</div>
+    <div class="sum-grid">
+      ${brief.name ? `<div class="si"><div class="si-l">Negocio</div><div class="si-v">${brief.name}</div></div>` : ''}
+      ${brief.type ? `<div class="si"><div class="si-l">Tipo</div><div class="si-v">${brief.type}</div></div>` : ''}
+      ${brief.city ? `<div class="si"><div class="si-l">Ciudad</div><div class="si-v">${brief.city}</div></div>` : ''}
+      ${brief.goal ? `<div class="si"><div class="si-l">Objetivo</div><div class="si-v">${brief.goal}</div></div>` : ''}
+      ${brief.vibe ? `<div class="si"><div class="si-l">Personalidad</div><div class="si-v">${brief.vibe}</div></div>` : ''}
+      ${brief.differentiator ? `<div class="si"><div class="si-l">Diferenciador</div><div class="si-v">${brief.differentiator}</div></div>` : ''}
+    </div>
+    <a href="https://wa.me/12148011100?text=${encodeURIComponent(waMsg)}" target="_blank" class="sum-wa">
+      💬 Enviar brief a Juan
+    </a>
+    <div class="sum-note">O simplemente espera — Juan te escribirá pronto ✓</div>`;
+
+  msgsEl.appendChild(card);
+  scrollB();
+  inputEl.placeholder = 'Formulario completado ✓';
+  inputEl.disabled = true; sbtn.disabled = true;
+}
+
+// ── UTILS ──
+function lock() { inputEl.disabled = true; sbtn.disabled = true; }
+function unlock() { inputEl.disabled = false; sbtn.disabled = false; inputEl.focus(); }
+function scrollB() { msgsEl.scrollTop = msgsEl.scrollHeight; }
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }
+function resize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  sbtn.disabled = !el.value.trim() || busy || done;
+}
+
+init();
+</script>
+</body>
+</html>
