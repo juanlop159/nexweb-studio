@@ -1,0 +1,2403 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>NexWeb Studio — Red de negocios mexicanos con IA</title>
+
+  <!-- Open Graph / WhatsApp / iMessage -->
+  <meta property="og:type" content="website"/>
+  <meta property="og:url" content="https://nexweb-studio.vercel.app/"/>
+  <meta property="og:title" content="NexWeb Studio — Red de negocios mexicanos con IA"/>
+  <meta property="og:description" content="Creamos tu página web con IA incluida y la mantenemos activa por una mensualidad fija. Desde $199/mes. Sin tecnicismos, sin contratos."/>
+  <meta property="og:image" content="https://nexweb-studio.vercel.app/preview.jpg"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta property="og:locale" content="es_MX"/>
+  <meta property="og:site_name" content="Nexweb Studio"/>
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="NexWeb Studio — Red de negocios mexicanos con IA"/>
+  <meta name="twitter:description" content="Creamos tu página web con IA incluida y la mantenemos activa por una mensualidad fija. Desde $199/mes."/>
+  <meta name="twitter:image" content="https://nexweb-studio.vercel.app/preview.jpg"/>
+
+  <!-- SEO -->
+  <meta name="description" content="NexWeb no es una agencia web. Es una red donde tu página, tu IA y otros negocios trabajan juntos para crecer. Únete desde $199/mes. Sin contratos."/>
+  <meta name="keywords" content="páginas web México, diseño web negocios locales, página web barata México, web con IA, Nexweb Studio"/>
+  <meta name="author" content="Juan López - Nexweb Studio"/>
+
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #04060d;
+  color: #f0f4ff;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* ── CANVAS BG ── */
+#bg-canvas {
+  position: fixed; top:0; left:0;
+  width:100%; height:100%;
+  pointer-events: none; z-index: 0;
+  opacity: 0.6;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top:0; left:0; right:0; z-index:200;
+  padding: 14px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(4,6,13,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(96,165,250,0.1);
+}
+.logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px; letter-spacing: 0.1em;
+  background: linear-gradient(90deg, #60a5fa, #22d3ee, #a78bfa);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.nav-pill {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 18px;
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
+  border-radius: 999px; color: white;
+  font-size: 13px; font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(37,99,235,0.5), inset 0 1px 0 rgba(255,255,255,0.15);
+  transition: all 0.2s;
+}
+.nav-pill:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(37,99,235,0.6); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 120px 24px 80px;
+  position: relative; z-index: 1;
+}
+
+/* big glow blobs */
+.blob {
+  position: absolute; border-radius: 50%;
+  filter: blur(80px); pointer-events: none;
+  animation: blobFloat 8s ease-in-out infinite;
+}
+.blob-1 { width:400px; height:400px; background: rgba(37,99,235,0.18); top:-10%; left:-10%; animation-delay:0s; }
+.blob-2 { width:300px; height:300px; background: rgba(167,139,250,0.14); top:10%; right:-5%; animation-delay:-3s; }
+.blob-3 { width:350px; height:350px; background: rgba(6,182,212,0.12); bottom:0%; left:20%; animation-delay:-5s; }
+@keyframes blobFloat {
+  0%,100% { transform: translateY(0px) scale(1); }
+  50%      { transform: translateY(-30px) scale(1.05); }
+}
+
+/* grid overlay */
+.hero-grid {
+  position: absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(96,165,250,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(96,165,250,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 20%, transparent 100%);
+}
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 7px 18px;
+  background: rgba(34,197,94,0.1);
+  border: 1px solid rgba(34,197,94,0.4);
+  border-radius: 999px;
+  font-size: 12px; color: #4ade80; font-weight: 600;
+  margin-bottom: 32px; letter-spacing: 0.07em;
+  position: relative;
+  animation: fadeUp 0.6s ease both;
+}
+.live-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 0 0 rgba(74,222,128,0.7);
+  animation: livePulse 2s infinite;
+}
+@keyframes livePulse {
+  0%   { box-shadow: 0 0 0 0 rgba(74,222,128,0.7); }
+  70%  { box-shadow: 0 0 0 8px rgba(74,222,128,0); }
+  100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); }
+}
+
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(64px, 15vw, 120px);
+  letter-spacing: 0.02em; line-height: 0.88;
+  margin-bottom: 28px; position: relative;
+  animation: fadeUp 0.6s 0.1s ease both;
+}
+.hero-title .line-plain { display: block; color: #f0f4ff; }
+.hero-title .line-grad  {
+  display: block;
+  background: linear-gradient(135deg, #60a5fa 0%, #22d3ee 40%, #a78bfa 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 30px rgba(96,165,250,0.4));
+}
+
+.hero-sub {
+  font-size: clamp(15px, 2.5vw, 18px);
+  color: #7a8aaa; max-width: 440px; line-height: 1.7;
+  margin-bottom: 44px; position: relative;
+  animation: fadeUp 0.6s 0.2s ease both;
+}
+
+.hero-actions {
+  display: flex; gap: 14px; flex-wrap: wrap;
+  justify-content: center; position: relative;
+  animation: fadeUp 0.6s 0.3s ease both;
+}
+.btn-glow {
+  padding: 15px 30px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white; border: none; border-radius: 12px;
+  font-family: 'DM Sans',sans-serif; font-size: 15px; font-weight: 700;
+  cursor: pointer; text-decoration: none; display: inline-block;
+  box-shadow: 0 0 0 1px rgba(96,165,250,0.3), 0 8px 24px rgba(37,99,235,0.5);
+  transition: all 0.2s; position: relative; overflow: hidden;
+}
+.btn-glow::before {
+  content:''; position:absolute; top:-50%; left:-60%; width:40%; height:200%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.5s;
+}
+.btn-glow:hover::before { left:120%; }
+.btn-glow:hover { transform: translateY(-2px); box-shadow: 0 0 0 1px rgba(96,165,250,0.5), 0 12px 32px rgba(37,99,235,0.6); }
+
+.btn-outline {
+  padding: 15px 30px;
+  background: rgba(255,255,255,0.03); color: #c7d4f0;
+  border: 1px solid rgba(96,165,250,0.2); border-radius: 12px;
+  font-family: 'DM Sans',sans-serif; font-size: 15px; font-weight: 600;
+  cursor: pointer; text-decoration: none; display: inline-block;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s;
+}
+.btn-outline:hover { border-color: rgba(96,165,250,0.5); color: #60a5fa; background: rgba(96,165,250,0.06); }
+
+/* ── FLOATING STATS ── */
+.hero-stats {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  justify-content: center; margin-top: 56px;
+  position: relative;
+  animation: fadeUp 0.6s 0.4s ease both;
+}
+.hstat {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 18px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(96,165,250,0.15);
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+}
+.hstat-num {
+  font-family: 'Bebas Neue', sans-serif; font-size: 20px;
+  background: linear-gradient(135deg, #60a5fa, #22d3ee);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  letter-spacing: 0.04em;
+}
+.hstat-label { font-size: 12px; color: #7a8aaa; }
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ── MARQUEE ── */
+.marquee-wrap {
+  overflow: hidden; padding: 18px 0;
+  background: rgba(255,255,255,0.02);
+  border-top: 1px solid rgba(96,165,250,0.08);
+  border-bottom: 1px solid rgba(96,165,250,0.08);
+  position: relative; z-index: 1;
+}
+.marquee-track {
+  display: flex; gap: 48px;
+  animation: marquee 20s linear infinite;
+  width: max-content;
+}
+.marquee-item {
+  display: flex; align-items: center; gap: 10px;
+  white-space: nowrap; font-size: 13px;
+  color: #4a5568; font-weight: 600; letter-spacing: 0.08em;
+}
+.marquee-dot { width: 4px; height: 4px; border-radius: 50%; background: #2563eb; }
+@keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+/* ── SECTIONS ── */
+.section {
+  padding: 80px 24px;
+  max-width: 880px; margin: 0 auto;
+  position: relative; z-index:1;
+  width: 100%;
+}
+.sec-divider { border-top: 1px solid rgba(96,165,250,0.08); }
+
+.sec-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; color: #22d3ee; letter-spacing: 0.2em;
+  text-transform: uppercase; margin-bottom: 12px; font-weight: 600;
+}
+.sec-label::before { content:''; width:20px; height:1px; background:#22d3ee; }
+.sec-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(40px, 7vw, 64px);
+  letter-spacing: 0.02em; line-height: 0.95; margin-bottom: 14px;
+}
+.sec-sub { font-size: 15px; color: #7a8aaa; max-width: 460px; line-height: 1.65; margin-bottom: 48px; }
+
+/* ── PLANS ── */
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px; margin-bottom: 24px; width: 100%;
+}
+
+.plan-card {
+  border-radius: 20px; padding: 24px 20px;
+  display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
+  transition: transform 0.25s, box-shadow 0.25s;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  backdrop-filter: blur(10px);
+}
+.plan-card::after {
+  content:''; position:absolute; inset:0; border-radius:20px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 60%);
+  pointer-events: none;
+}
+.plan-card:hover { transform: translateY(-6px); box-shadow: 0 24px 60px rgba(0,0,0,0.5); }
+
+.plan-card.feat {
+  background: linear-gradient(160deg, rgba(29,78,216,0.25) 0%, rgba(13,25,60,0.6) 100%);
+  border-color: rgba(59,130,246,0.45);
+  box-shadow: 0 0 0 1px rgba(59,130,246,0.2), 0 8px 32px rgba(37,99,235,0.2);
+}
+.plan-card.feat:hover { box-shadow: 0 0 0 1px rgba(59,130,246,0.4), 0 24px 60px rgba(37,99,235,0.3); }
+
+.popular-pill {
+  position: absolute; top:16px; right:16px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  color: #93c5fd;
+  background: rgba(59,130,246,0.2);
+  padding: 4px 10px; border-radius: 999px;
+  border: 1px solid rgba(96,165,250,0.35);
+}
+
+.plan-icon { font-size: 28px; margin-bottom: 14px; }
+.plan-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px; letter-spacing: 0.04em; margin-bottom: 5px;
+}
+.plan-tagline { font-size: 12px; color: #7a8aaa; line-height: 1.5; margin-bottom: 20px; }
+
+.price-box {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px; padding: 16px; margin-bottom: 18px;
+}
+.price-lbl { font-size: 10px; color: #7a8aaa; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 4px; }
+.price-big {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 58px; line-height: 1; letter-spacing: 0.02em;
+  background: linear-gradient(135deg, #4ade80, #22d3ee);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 12px rgba(74,222,128,0.3));
+}
+.price-per { font-size: 11px; color: #7a8aaa; margin-bottom: 10px; }
+.price-sep { height:1px; background: rgba(255,255,255,0.06); margin-bottom:10px; }
+.setup-line {
+  font-size: 12px; color: #7a8aaa;
+  display: flex; align-items: center; gap: 6px;
+}
+.setup-line strong { color: #60a5fa; font-weight: 700; }
+
+.feat-list { list-style:none; flex:1; margin-bottom:20px; }
+.feat-list li {
+  font-size: 13px; color: #8898b8;
+  padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+  display: flex; align-items: flex-start; gap: 9px; line-height: 1.4;
+}
+.feat-list li:last-child { border-bottom: none; }
+.ck { color: #4ade80; font-weight: 800; flex-shrink:0; font-size:12px; margin-top:2px; }
+
+.plan-cta {
+  width:100%; padding:13px;
+  border-radius:10px; border:none;
+  font-family:'DM Sans',sans-serif; font-size:14px; font-weight:700;
+  cursor:pointer; text-decoration:none;
+  display:block; text-align:center;
+  transition: all 0.2s; margin-top:auto;
+}
+.cta-solid {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  box-shadow: 0 4px 16px rgba(37,99,235,0.4);
+}
+.cta-solid:hover { transform:translateY(-2px); box-shadow: 0 8px 24px rgba(37,99,235,0.55); }
+.cta-border {
+  background: rgba(96,165,250,0.07);
+  color: #93c5fd;
+  border: 1px solid rgba(96,165,250,0.25) !important;
+}
+.cta-border:hover { background: rgba(96,165,250,0.14); }
+
+/* setup box */
+.setup-callout {
+  display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
+  padding: 20px 24px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(96,165,250,0.12);
+  border-radius: 14px;
+  backdrop-filter: blur(10px);
+}
+.sc-icon {
+  width:44px; height:44px; flex-shrink:0;
+  background: linear-gradient(135deg, rgba(37,99,235,0.3), rgba(6,182,212,0.2));
+  border: 1px solid rgba(96,165,250,0.25);
+  border-radius:12px;
+  display:flex; align-items:center; justify-content:center; font-size:20px;
+}
+.sc-title { font-size:14px; font-weight:700; margin-bottom:3px; }
+.sc-desc { font-size:12px; color:#7a8aaa; line-height:1.5; }
+.sc-price { margin-left:auto; text-align:right; }
+.sc-from { font-size:10px; color:#7a8aaa; letter-spacing:0.12em; margin-bottom:2px; }
+.sc-num {
+  font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:0.04em;
+  background: linear-gradient(135deg, #60a5fa, #22d3ee);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.sc-sub { font-size:11px; color:#7a8aaa; }
+
+/* ── STEPS ── */
+.step-row {
+  display: flex; gap: 18px; align-items: flex-start;
+  padding: 24px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: all 0.2s;
+}
+.step-row:last-child { border-bottom:none; }
+.step-row:hover .s-num { border-color: rgba(96,165,250,0.5); color: #93c5fd; }
+.s-num {
+  width:42px; height:42px; flex-shrink:0;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius:11px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Bebas Neue',sans-serif; font-size:16px; color:#60a5fa;
+  transition: all 0.2s;
+}
+.s-title { font-size:15px; font-weight:700; margin-bottom:4px; }
+.s-desc { font-size:13px; color:#7a8aaa; line-height:1.55; }
+
+/* ── ABOUT ── */
+.about-grid { display:grid; grid-template-columns:1fr 1fr; gap:28px; align-items:center; }
+.about-card {
+  border-radius:20px; padding:30px; text-align:center;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  backdrop-filter: blur(10px);
+  position: relative; overflow: hidden;
+}
+.about-card::before {
+  content:''; position:absolute; top:-40%; left:50%; transform:translateX(-50%);
+  width:200px; height:200px;
+  background: radial-gradient(circle, rgba(37,99,235,0.15) 0%, transparent 70%);
+  pointer-events:none;
+}
+.av {
+  width:72px; height:72px;
+  background: linear-gradient(135deg, #2563eb, #22d3ee);
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Bebas Neue',sans-serif; font-size:24px; color:white;
+  margin: 0 auto 14px;
+  box-shadow: 0 8px 24px rgba(37,99,235,0.4), 0 0 0 4px rgba(37,99,235,0.15);
+}
+.av-name { font-size:18px; font-weight:800; margin-bottom:3px; }
+.av-role { font-size:12px; color:#60a5fa; margin-bottom:12px; font-weight:600; letter-spacing:0.04em; }
+.av-bio { font-size:13px; color:#7a8aaa; line-height:1.6; }
+
+.pt-row { display:flex; gap:14px; align-items:flex-start; margin-bottom:22px; }
+.pt-row:last-child { margin-bottom:0; }
+.pt-ico {
+  width:38px; height:38px; flex-shrink:0;
+  background: linear-gradient(135deg, rgba(37,99,235,0.2), rgba(34,211,238,0.1));
+  border: 1px solid rgba(96,165,250,0.2);
+  border-radius:10px;
+  display:flex; align-items:center; justify-content:center; font-size:16px;
+}
+.pt-title { font-size:14px; font-weight:700; margin-bottom:3px; }
+.pt-desc { font-size:13px; color:#7a8aaa; line-height:1.5; }
+
+/* ── CTA SECTION ── */
+.cta-band {
+  position: relative; overflow: hidden;
+  text-align: center; padding: 80px 24px; z-index:1;
+  border-top: 1px solid rgba(96,165,250,0.08);
+  border-bottom: 1px solid rgba(96,165,250,0.08);
+}
+.cta-band::before {
+  content:''; position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 50%, rgba(37,99,235,0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 20% 80%, rgba(167,139,250,0.08) 0%, transparent 60%);
+}
+.cta-band h2 {
+  font-family:'Bebas Neue',sans-serif;
+  font-size: clamp(48px, 9vw, 84px);
+  letter-spacing:0.02em; line-height:0.95;
+  margin-bottom:16px; position:relative;
+}
+.cta-band h2 span {
+  background: linear-gradient(135deg, #60a5fa, #22d3ee);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.cta-band p { font-size:15px; color:#7a8aaa; margin-bottom:32px; position:relative; }
+
+/* ── FOOTER ── */
+footer {
+  padding:28px 20px; text-align:center;
+  font-size:12px; color:#4a5568;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  position: relative; z-index:1;
+}
+.ft-logo {
+  font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:0.1em;
+  background: linear-gradient(90deg, #60a5fa, #22d3ee);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  margin-bottom:6px;
+}
+
+
+
+/* ── RESPONSIVE ── */
+/* ── HAMBURGER NAV ── */
+.nav-menu {
+  display: flex; align-items: center; gap: 8px;
+}
+.hamburger {
+  display: none;
+  flex-direction: column; justify-content: center; align-items: center;
+  width: 42px; height: 42px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(96,165,250,0.2);
+  border-radius: 10px; cursor: pointer; gap: 5px;
+  transition: all 0.2s;
+}
+.hamburger span {
+  display: block; width: 20px; height: 2px;
+  background: #94a3b8; border-radius: 2px;
+  transition: all 0.3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); background: #60a5fa; }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: #60a5fa; }
+
+.mobile-drawer {
+  display: none;
+  position: fixed; top: 57px; left: 0; right: 0;
+  background: rgba(4,6,13,0.98);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(96,165,250,0.15);
+  padding: 16px 20px 20px;
+  flex-direction: column; gap: 10px;
+  z-index: 190;
+  animation: drawerSlide 0.2s ease;
+}
+@keyframes drawerSlide {
+  from { opacity:0; transform: translateY(-8px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+.mobile-drawer.open { display: flex; }
+.drawer-link {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 16px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(96,165,250,0.1);
+  border-radius: 12px;
+  color: #f0f4ff; font-size: 14px; font-weight: 600;
+  text-decoration: none; cursor: pointer;
+  font-family: 'Space Grotesk', sans-serif;
+  transition: all 0.15s;
+}
+.drawer-link:hover { background: rgba(37,99,235,0.1); border-color: rgba(37,99,235,0.3); }
+.drawer-link .dl-icon { font-size: 18px; width: 24px; text-align: center; }
+.drawer-link .dl-desc { font-size: 11px; color: #475569; font-weight: 400; margin-top: 1px; font-family: 'JetBrains Mono', monospace; }
+
+@media (max-width: 768px) {
+  /* Nav */
+  .nav-menu { display: none; }
+  .hamburger { display: flex; }
+
+  /* Hero */
+  .hero { padding: 100px 20px 60px; }
+  .hero-title { font-size: clamp(32px, 8vw, 52px) !important; }
+  .hero-sub { font-size: 14px !important; }
+  .hero-actions { flex-direction: column; width: 100%; max-width: 320px; }
+  .hero-actions a { width: 100%; text-align: center; }
+  .hero-stats { gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .hstat { padding: 8px 12px; }
+
+  /* Sections */
+  .section { padding: 40px 16px; }
+  .sec-title { font-size: clamp(22px, 5vw, 36px) !important; }
+  .plans-grid { grid-template-columns: 1fr !important; }
+  .about-grid { grid-template-columns: 1fr !important; }
+  .about-card { order: -1; }
+  .sc-price { margin-left: 0; text-align: left; width: 100%; }
+
+  /* 3-column grids → 1 column */
+  .section > div[style*="grid-template-columns:repeat(3"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Ecosystem cards */
+  .section > div[style*="grid-template-columns:repeat(3,1fr)"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Dashboard preview — stack metrics 2x2 on mobile */
+  .dash-metrics {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .dash-metric-item {
+    border-right: none !important;
+    border-bottom: 1px solid #1a2540 !important;
+  }
+
+  /* Founders grid */
+  .founders-benefits {
+    grid-template-columns: 1fr !important;
+  }
+  #founderCount { font-size: 48px !important; }
+
+  /* Network section */
+  .network-cards { grid-template-columns: 1fr !important; }
+
+  /* Setup callout */
+  .setup-callout { flex-direction: column !important; }
+
+  /* CTA band */
+  .cta-band { padding: 50px 20px !important; }
+  .cta-band h2 { font-size: 28px !important; }
+}
+
+@media (max-width: 480px) {
+  .dash-metrics { grid-template-columns: 1fr 1fr !important; }
+  .hstat-num { font-size: 18px !important; }
+  .sec-label { font-size: 10px !important; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Nexweb Studio</div>
+  <!-- Desktop menu -->
+  <div class="nav-menu">
+    <a href="discover.html" class="nav-pill" style="background:transparent;border:1px solid rgba(167,139,250,0.3);color:#a78bfa;box-shadow:none;padding:7px 16px;">🌐 Red de negocios</a>
+    <a href="#membresias" class="nav-pill" style="background:transparent;border:1px solid rgba(96,165,250,0.3);color:#60a5fa;box-shadow:none;padding:7px 16px;">Ver planes</a>
+    <button class="nav-pill" onclick="openClientDirect()" style="cursor:pointer;border:none;font-size:13px;">🔐 Portal clientes</button>
+  </div>
+  <!-- Mobile right side -->
+  <div style="display:flex;align-items:center;gap:8px;">
+    <button class="nav-pill" onclick="openClientDirect()" id="navPortalMobile" style="cursor:pointer;border:none;font-size:12px;padding:7px 14px;display:none;">🔐 Portal</button>
+    <button class="hamburger" id="hamburgerBtn" onclick="toggleDrawer()" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile drawer -->
+<div class="mobile-drawer" id="mobileDrawer">
+  <a href="discover.html" class="drawer-link">
+    <span class="dl-icon">🌐</span>
+    <div><div>Red de negocios</div><div class="dl-desc">Directorio de negocios en la red</div></div>
+  </a>
+  <a href="#membresias" class="drawer-link" onclick="closeDrawer()">
+    <span class="dl-icon">💎</span>
+    <div><div>Ver planes</div><div class="dl-desc">Básico, Pro y Elite desde $199/mes</div></div>
+  </a>
+  <a href="#fundadores" class="drawer-link" onclick="closeDrawer()">
+    <span class="dl-icon">⭐</span>
+    <div><div>Programa Fundadores</div><div class="dl-desc">Solo 10 lugares · setup gratis</div></div>
+  </a>
+  <a href="network.html" class="drawer-link">
+    <span class="dl-icon">📊</span>
+    <div><div>Stats de la red</div><div class="dl-desc">Ve el ecosistema en tiempo real</div></div>
+  </a>
+  <div style="border-top:1px solid #1a2540;margin-top:4px;padding-top:10px;">
+    <button onclick="openClientDirect();closeDrawer();" class="drawer-link" style="width:100%;background:rgba(37,99,235,0.12);border-color:rgba(37,99,235,0.3);">
+      <span class="dl-icon">🔐</span>
+      <div><div style="color:#60a5fa;">Portal clientes</div><div class="dl-desc">Accede con tu código</div></div>
+    </button>
+  </div>
+</div>
+
+<script>
+function toggleDrawer(){
+  const btn=document.getElementById('hamburgerBtn');
+  const drawer=document.getElementById('mobileDrawer');
+  btn.classList.toggle('open');
+  drawer.classList.toggle('open');
+}
+function closeDrawer(){
+  document.getElementById('hamburgerBtn').classList.remove('open');
+  document.getElementById('mobileDrawer').classList.remove('open');
+}
+function checkNav(){
+  const mobile=window.innerWidth<=768;
+  const p=document.getElementById('navPortalMobile');
+  if(p) p.style.display=mobile?'flex':'none';
+}
+checkNav();
+window.addEventListener('resize',checkNav);
+document.addEventListener('click',function(e){
+  const drawer=document.getElementById('mobileDrawer');
+  const btn=document.getElementById('hamburgerBtn');
+  if(drawer&&drawer.classList.contains('open')&&!drawer.contains(e.target)&&!btn.contains(e.target)){
+    closeDrawer();
+  }
+});
+</script>
+
+
+<!-- HERO -->
+<div class="hero">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="hero-grid"></div>
+
+  <!-- Network visualization canvas -->
+  <canvas id="network-canvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0.35;z-index:0;"></canvas>
+
+  <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;width:100%;">
+    <div class="hero-badge">
+      <div class="live-dot"></div>
+      Red de negocios mexicanos con IA
+    </div>
+
+    <h1 class="hero-title">
+      <span class="line-plain">Tu negocio no</span>
+      <span class="line-plain">debería existir</span>
+      <span class="line-grad">solo.</span>
+    </h1>
+
+    <p class="hero-sub">NexWeb no es una agencia web. Es una red donde tu página, tu IA y otros negocios trabajan juntos para crecer. Cada cliente que entra aumenta el valor para todos.</p>
+
+    <div class="hero-actions">
+      <a href="#fundadores" class="btn-glow">Unirme a la red 🚀</a>
+      <a href="discover.html" class="btn-outline">Explorar la red →</a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-num">48H</div><div class="hstat-label">Tu página lista</div></div>
+      <div class="hstat"><div class="hstat-num">IA</div><div class="hstat-label">Incluida siempre</div></div>
+      <div class="hstat"><div class="hstat-num">$0</div><div class="hstat-label">Setup fundadores</div></div>
+      <div class="hstat"><div class="hstat-num">MX</div><div class="hstat-label">100% mexicano</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Network visualization
+(function(){
+  const canvas = document.getElementById('network-canvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const nodes = [];
+  const labels = ['Barbería','Gym','Restaurante','Spa','Clínica','Boutique','Dentista','Café','Hotel','Foto'];
+  
+  function resize(){
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for(let i = 0; i < 10; i++){
+    nodes.push({
+      x: 0.1 + Math.random() * 0.8,
+      y: 0.1 + Math.random() * 0.8,
+      vx: (Math.random()-0.5)*0.0003,
+      vy: (Math.random()-0.5)*0.0003,
+      r: 5 + Math.random()*4,
+      label: labels[i],
+      pulse: Math.random()*Math.PI*2
+    });
+  }
+
+  function draw(){
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0,0,W,H);
+    
+    // Draw connections
+    for(let i=0;i<nodes.length;i++){
+      for(let j=i+1;j<nodes.length;j++){
+        const dx=(nodes[i].x-nodes[j].x)*W;
+        const dy=(nodes[i].y-nodes[j].y)*H;
+        const dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist<W*0.35){
+          ctx.beginPath();
+          ctx.moveTo(nodes[i].x*W, nodes[i].y*H);
+          ctx.lineTo(nodes[j].x*W, nodes[j].y*H);
+          ctx.strokeStyle=`rgba(96,165,250,${(1-dist/(W*0.35))*0.4})`;
+          ctx.lineWidth=1;
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Draw nodes
+    nodes.forEach((n,i)=>{
+      n.pulse += 0.03;
+      const glow = Math.sin(n.pulse)*0.3+0.7;
+      
+      // Pulse ring
+      ctx.beginPath();
+      ctx.arc(n.x*W, n.y*H, n.r*2.5, 0, Math.PI*2);
+      ctx.fillStyle=`rgba(37,99,235,${glow*0.08})`;
+      ctx.fill();
+      
+      // Node
+      const grad=ctx.createRadialGradient(n.x*W,n.y*H,0,n.x*W,n.y*H,n.r*1.5);
+      grad.addColorStop(0,'rgba(96,165,250,0.9)');
+      grad.addColorStop(1,'rgba(37,99,235,0.3)');
+      ctx.beginPath();
+      ctx.arc(n.x*W, n.y*H, n.r, 0, Math.PI*2);
+      ctx.fillStyle=grad;
+      ctx.fill();
+
+      // Label
+      ctx.font='10px Space Grotesk, sans-serif';
+      ctx.fillStyle='rgba(240,244,255,0.7)';
+      ctx.textAlign='center';
+      ctx.fillText(n.label, n.x*W, n.y*H - n.r - 5);
+
+      // Move
+      n.x += n.vx; n.y += n.vy;
+      if(n.x<0.05||n.x>0.95) n.vx*=-1;
+      if(n.y<0.05||n.y>0.95) n.vy*=-1;
+    });
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track" id="mtrack"></div>
+</div>
+
+<!-- SOCIAL PROOF -->
+<div style="background:linear-gradient(90deg,rgba(37,99,235,0.05),rgba(167,139,250,0.05));border-top:1px solid rgba(37,99,235,0.1);border-bottom:1px solid rgba(37,99,235,0.1);padding:16px 24px;">
+  <div style="max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#94a3b8;"><span style="color:#22c55e;font-weight:700;">✓</span> Sin contratos — cancela cuando quieras</div>
+    <div style="width:1px;height:16px;background:#1a2540;"></div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#94a3b8;"><span style="color:#22c55e;font-weight:700;">✓</span> Tu página lista en 48 horas</div>
+    <div style="width:1px;height:16px;background:#1a2540;"></div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#94a3b8;"><span style="color:#22c55e;font-weight:700;">✓</span> Diseño único — nunca un template genérico</div>
+    <div style="width:1px;height:16px;background:#1a2540;"></div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#94a3b8;"><span style="color:#22c55e;font-weight:700;">✓</span> Soporte directo con Juan por WhatsApp</div>
+  </div>
+</div>
+
+<!-- MEMBRESÍAS -->
+<div id="membresias" class="sec-divider">
+<div class="section">
+  <div class="sec-label">Membresías</div>
+  <div class="sec-title">Elige tu plan mensual</div>
+  <div class="sec-sub">Entra a la red NexWeb desde $199/mes. Sin contratos, sin tecnicismos. El setup es gratis para los primeros 10 fundadores.</div>
+
+  <div class="plans-grid">
+    <!-- BÁSICO -->
+    <div class="plan-card">
+      <div class="plan-icon">🌱</div>
+      <div class="plan-name">Básico</div>
+      <div class="plan-tagline">Presencia profesional para negocios que arrancan su vida digital.</div>
+      <div class="price-box">
+        <div class="price-lbl">Membresía mensual</div>
+        <div class="price-big">$199</div>
+        <div class="price-per">pesos / mes · todo incluido</div>
+        <div class="price-sep"></div>
+        <div class="setup-line">🔧 Creación <span style="text-decoration:line-through;opacity:0.5;">$1,000</span> → <span style="color:#22c55e;font-weight:700;">GRATIS fundadores</span></div>
+      </div>
+      <ul class="feat-list">
+        <li><span class="ck">✓</span> Página de 4-5 secciones</li>
+        <li><span class="ck">✓</span> Diseño profesional único</li>
+        <li><span class="ck">✓</span> Adaptada para celular</li>
+        <li><span class="ck">✓</span> Botón de WhatsApp</li>
+        <li><span class="ck">✓</span> Google Maps integrado</li>
+        <li><span class="ck">✓</span> Hosting y dominio incluidos</li>
+        <li><span class="ck">✓</span> Asistente IA simple — responde automáticamente: <em style="color:#94a3b8">"¿A qué hora abren?", "¿Dónde están?"</em></li>
+      </ul>
+      <a href="https://wa.me/12148011100?text=Hola%20Juan%2C%20quiero%20el%20Plan%20B%C3%A1sico%20de%20NexWeb" class="plan-cta cta-border" target="_blank">📲 Quiero este plan</a>
+    </div>
+
+    <!-- PRO -->
+    <div class="plan-card feat">
+      <div class="popular-pill">⭐ MÁS POPULAR</div>
+      <div class="plan-icon">⚡</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-tagline">Tu mejor vendedor digital. Con IA que atiende clientes aunque estés dormido.</div>
+      <div class="price-box">
+        <div class="price-lbl">Membresía mensual</div>
+        <div class="price-big">$399</div>
+        <div class="price-per">pesos / mes · todo incluido</div>
+        <div class="price-sep"></div>
+        <div class="setup-line">🔧 Creación <span style="text-decoration:line-through;opacity:0.5;">$2,500</span> → <span style="color:#22c55e;font-weight:700;">GRATIS fundadores</span></div>
+      </div>
+      <ul class="feat-list">
+        <li><span class="ck">✓</span> Todo lo del plan Básico</li>
+        <li><span class="ck">✓</span> Chatbot IA 24/7 — agenda citas, cotiza servicios y responde cualquier pregunta aunque estés dormido</li>
+        <li><span class="ck">✓</span> Formulario de citas</li>
+        <li><span class="ck">✓</span> Galería de fotos y videos</li>
+        <li><span class="ck">✓</span> SEO básico en Google <em style="color:#94a3b8;font-size:11px">(para que te encuentren cuando te buscan)</em></li>
+        <li><span class="ck">✓</span> Actualizaciones mensuales</li>
+      </ul>
+      <a href="https://wa.me/12148011100?text=Hola%20Juan%2C%20quiero%20el%20Plan%20Pro%20de%20NexWeb" class="plan-cta cta-solid" target="_blank">📲 Quiero este plan</a>
+    </div>
+
+    <!-- ELITE -->
+    <div class="plan-card">
+      <div class="plan-icon">👑</div>
+      <div class="plan-name">Elite</div>
+      <div class="plan-tagline">La experiencia completa para negocios que quieren dominar su mercado local.</div>
+      <div class="price-box">
+        <div class="price-lbl">Membresía mensual</div>
+        <div class="price-big">$699</div>
+        <div class="price-per">pesos / mes · todo incluido</div>
+        <div class="price-sep"></div>
+        <div class="setup-line">🔧 Creación <span style="text-decoration:line-through;opacity:0.5;">$5,000</span> → <span style="color:#22c55e;font-weight:700;">GRATIS fundadores</span></div>
+      </div>
+      <ul class="feat-list">
+        <li><span class="ck">✓</span> Todo lo del plan Pro</li>
+        <li><span class="ck">✓</span> IA entrenada con tu menú, precios y servicios — habla como si fuera un empleado tuyo</li>
+        <li><span class="ck">✓</span> Animaciones premium</li>
+        <li><span class="ck">✓</span> Sistema de reservas online</li>
+        <li><span class="ck">✓</span> Reseñas de Google integradas</li>
+        <li><span class="ck">✓</span> SEO avanzado <em style="color:#94a3b8;font-size:11px">(para aparecer primero en Google en tu ciudad)</em></li>
+        <li><span class="ck">✓</span> Cambios ilimitados al mes</li>
+        <li><span class="ck">✓</span> Soporte prioritario</li>
+      </ul>
+      <a href="https://wa.me/12148011100?text=Hola%20Juan%2C%20quiero%20el%20Plan%20Elite%20de%20NexWeb" class="plan-cta cta-border" target="_blank">📲 Quiero este plan</a>
+    </div>
+  </div>
+
+  <div class="setup-callout">
+    <div class="sc-icon">🎁</div>
+    <div style="flex:1; min-width:180px">
+      <div class="sc-title">Fundadores: Setup fee gratis</div>
+      <div class="sc-desc">Los primeros 10 negocios en unirse no pagan el costo de creación. Solo su mensualidad mensual desde el día 1.</div>
+    </div>
+    <div class="sc-price">
+      <div class="sc-from" style="text-decoration:line-through;opacity:0.5;">DESDE $1,000</div>
+      <div class="sc-num" style="color:#22c55e;">$0 MXN</div>
+      <div class="sc-sub">para los primeros 10 fundadores</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- DASHBOARD PREVIEW -->
+<div class="sec-divider">
+<div class="section">
+  <div class="sec-label">Tu panel de crecimiento</div>
+  <div class="sec-title">Ve exactamente cómo creces</div>
+  <div class="sec-sub">Cada negocio en la red tiene acceso a métricas reales — incluyendo cuánto tráfico te generó la red NexWeb este mes.</div>
+
+  <div style="background:#0a0f1e;border:1px solid #1a2540;border-radius:20px;overflow:hidden;margin-top:36px;box-shadow:0 20px 60px rgba(0,0,0,0.4);">
+    <div style="padding:14px 20px;border-bottom:1px solid #1a2540;display:flex;align-items:center;justify-content:space-between;background:#080d1a;flex-wrap:wrap;gap:8px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:26px;height:26px;background:#2563eb;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:#fff;">NW</div>
+        <span style="font-size:13px;font-weight:600;font-family:'Space Grotesk',sans-serif;">Mi portal · OB Barbería</span>
+        <span style="font-size:10px;color:#22c55e;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);padding:2px 8px;border-radius:20px;font-family:'JetBrains Mono',monospace;">● en línea</span>
+      </div>
+      <span style="font-size:10px;color:#f59e0b;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);padding:3px 10px;border-radius:20px;font-family:'JetBrains Mono',monospace;">⭐ Fundador NexWeb</span>
+    </div>
+    <div class="dash-metrics" style="display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid #1a2540;">
+      <div style="padding:20px;border-right:1px solid #1a2540;">
+        <div style="font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-family:'JetBrains Mono',monospace;">Visitas este mes</div>
+        <div style="font-size:28px;font-weight:700;color:#60a5fa;">1,284</div>
+        <div style="font-size:11px;color:#22c55e;margin-top:4px;font-family:'JetBrains Mono',monospace;">↑ 23% vs mes anterior</div>
+      </div>
+      <div style="padding:20px;border-right:1px solid #1a2540;">
+        <div style="font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-family:'JetBrains Mono',monospace;">Clics WhatsApp</div>
+        <div style="font-size:28px;font-weight:700;color:#22c55e;">87</div>
+        <div style="font-size:11px;color:#22c55e;margin-top:4px;font-family:'JetBrains Mono',monospace;">↑ 6.7% conversión</div>
+      </div>
+      <div style="padding:20px;border-right:1px solid #1a2540;">
+        <div style="font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-family:'JetBrains Mono',monospace;">Tráfico de la red</div>
+        <div style="font-size:28px;font-weight:700;color:#a78bfa;">137</div>
+        <div style="font-size:11px;color:#a78bfa;margin-top:4px;font-family:'JetBrains Mono',monospace;">visitas desde NexWeb</div>
+      </div>
+      <div style="padding:20px;">
+        <div style="font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-family:'JetBrains Mono',monospace;">Posición en red</div>
+        <div style="font-size:28px;font-weight:700;color:#f59e0b;">#1 ⭐</div>
+        <div style="font-size:11px;color:#f59e0b;margin-top:4px;font-family:'JetBrains Mono',monospace;">en el directorio</div>
+      </div>
+    </div>
+    <div style="padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+      <div style="font-size:12px;color:#94a3b8;">🎁 Enlace de referido: <span style="color:#60a5fa;font-family:'JetBrains Mono',monospace;">nexweb-studio.vercel.app/ref/OBBARBERIA</span></div>
+      <div style="font-size:12px;color:#22c55e;font-family:'JetBrains Mono',monospace;">2 referidos · $400 en créditos</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div id="como-funciona" class="sec-divider">
+<div class="section">
+  <div class="sec-label">El proceso</div>
+  <div class="sec-title">Tres pasos, un ecosistema</div>
+  <div class="sec-sub">No solo construimos tu página — te integramos a una red que trabaja para ti las 24 horas.</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px;">
+    <div style="background:#0a0f1e;border:1px solid #1a2540;border-radius:20px;padding:32px 24px;text-align:center;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#2563eb,#0891b2);"></div>
+      <div style="width:56px;height:56px;background:rgba(37,99,235,0.15);border:1px solid rgba(37,99,235,0.3);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 18px;">🔨</div>
+      <div style="font-size:11px;color:#2563eb;font-family:'JetBrains Mono',monospace;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">01 · Construye</div>
+      <div style="font-size:18px;font-weight:700;margin-bottom:10px;font-family:'Space Grotesk',sans-serif;">Construimos tu página</div>
+      <div style="font-size:13px;color:#94a3b8;line-height:1.6;">Diseño único para tu negocio, IA integrada, SEO desde el día 1. Lista en menos de 48 horas.</div>
+    </div>
+    <div style="background:#0a0f1e;border:1px solid #1a2540;border-radius:20px;padding:32px 24px;text-align:center;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#7c3aed,#a78bfa);"></div>
+      <div style="width:56px;height:56px;background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 18px;">🌐</div>
+      <div style="font-size:11px;color:#a78bfa;font-family:'JetBrains Mono',monospace;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">02 · Conéctate</div>
+      <div style="font-size:18px;font-weight:700;margin-bottom:10px;font-family:'Space Grotesk',sans-serif;">Entras a la red</div>
+      <div style="font-size:13px;color:#94a3b8;line-height:1.6;">Tu negocio aparece en el directorio NexWeb y recibe tráfico de otros negocios de la red automáticamente.</div>
+    </div>
+    <div style="background:#0a0f1e;border:1px solid #1a2540;border-radius:20px;padding:32px 24px;text-align:center;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#059669,#22c55e);"></div>
+      <div style="width:56px;height:56px;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 18px;">📈</div>
+      <div style="font-size:11px;color:#22c55e;font-family:'JetBrains Mono',monospace;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">03 · Crece</div>
+      <div style="font-size:18px;font-weight:700;margin-bottom:10px;font-family:'Space Grotesk',sans-serif;">Creces con la red</div>
+      <div style="font-size:13px;color:#94a3b8;line-height:1.6;">Cada nuevo negocio que entra aumenta el tráfico para todos. Tu dashboard muestra cuánto te genera la red cada mes.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- FUNDADORES -->
+<div id="fundadores" class="sec-divider">
+<div class="section">
+  <div class="sec-label">Programa exclusivo</div>
+  <div class="sec-title">Sé fundador de la red</div>
+  <div class="sec-sub">Solo los primeros 10 negocios obtienen condiciones que nunca volverán a existir.</div>
+
+  <!-- Contador -->
+  <div style="display:flex;justify-content:center;margin:32px 0;">
+    <div style="background:#0a0f1e;border:1px solid #2563eb;border-radius:20px;padding:28px 48px;text-align:center;box-shadow:0 0 40px rgba(37,99,235,0.15);">
+      <div style="font-size:11px;color:#475569;text-transform:uppercase;letter-spacing:2px;font-family:'JetBrains Mono',monospace;margin-bottom:10px;">Lugares disponibles</div>
+      <div id="founderCount" style="font-size:64px;font-weight:700;font-family:'Bebas Neue',sans-serif;background:linear-gradient(90deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;">10</div>
+      <div style="font-size:13px;color:#94a3b8;margin-top:6px;">de 10 lugares · <span style="color:#22c55e;">● abierto</span></div>
+    </div>
+  </div>
+
+  <!-- Beneficios -->
+  <div class="founders-benefits" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:700px;margin:0 auto 36px;">
+    <div style="display:flex;align-items:flex-start;gap:14px;background:#0a0f1e;border:1px solid #1a2540;border-radius:14px;padding:20px;">
+      <div style="font-size:28px;flex-shrink:0;">🔒</div>
+      <div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:4px;font-family:'Space Grotesk',sans-serif;">Precio congelado para siempre</div>
+        <div style="font-size:12px;color:#94a3b8;line-height:1.5;">Tu mensualidad nunca sube, sin importar cuánto crezca la plataforma.</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:14px;background:#0a0f1e;border:1px solid #1a2540;border-radius:14px;padding:20px;">
+      <div style="font-size:28px;flex-shrink:0;">🥇</div>
+      <div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:4px;font-family:'Space Grotesk',sans-serif;">Posición #1 en el directorio</div>
+        <div style="font-size:12px;color:#94a3b8;line-height:1.5;">Cuando la red tenga 100 negocios, tú apareces primero. Siempre.</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:14px;background:#0a0f1e;border:1px solid #1a2540;border-radius:14px;padding:20px;">
+      <div style="font-size:28px;flex-shrink:0;">⭐</div>
+      <div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:4px;font-family:'Space Grotesk',sans-serif;">Badge "Fundador NexWeb"</div>
+        <div style="font-size:12px;color:#94a3b8;line-height:1.5;">Visible en tu perfil del directorio. Exclusivo, no se puede comprar después.</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:14px;background:#0a0f1e;border:1px solid #22c55e;border-radius:14px;padding:20px;">
+      <div style="font-size:28px;flex-shrink:0;">🎁</div>
+      <div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:4px;font-family:'Space Grotesk',sans-serif;">Setup fee gratis</div>
+        <div style="font-size:12px;color:#94a3b8;line-height:1.5;">El pago de creación ($3,000–$10,000) se elimina. Solo pagas tu mensualidad.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;">
+    <a href="https://wa.me/12148011100?text=Hola%20Juan%2C%20quiero%20ser%20fundador%20de%20NexWeb%20Studio" class="btn-glow" style="font-size:15px;padding:16px 36px;">
+      🚀 Quiero ser fundador
+    </a>
+    <div style="margin-top:12px;font-size:12px;color:#475569;font-family:'JetBrains Mono',monospace;">Solo quedan <span id="founderCountSmall" style="color:#60a5fa;">10</span> lugares · Sin contratos</div>
+  </div>
+</div>
+</div>
+<!-- JUAN STRIP -->
+<div style="background:#080d1a;border-top:1px solid #1a2540;border-bottom:1px solid #1a2540;padding:24px;">
+<div style="max-width:900px;margin:0 auto;display:flex;align-items:center;gap:20px;flex-wrap:wrap;justify-content:center;">
+  <div style="display:flex;align-items:center;gap:14px;">
+    <img src="data:image/jpeg;base64,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" alt="Juan López" style="width:52px;height:52px;border-radius:50%;object-fit:cover;object-position:center top;border:2px solid rgba(37,99,235,0.4);flex-shrink:0;"/>
+    <div>
+      <div style="font-size:14px;font-weight:700;font-family:'Space Grotesk',sans-serif;">Juan López</div>
+      <div style="font-size:11px;color:#475569;font-family:'JetBrains Mono',monospace;">Fundador · Nexweb Studio</div>
+    </div>
+  </div>
+  <div style="width:1px;height:36px;background:#1a2540;flex-shrink:0;display:none;" class="desk-divider"></div>
+  <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;">
+    <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#94a3b8;"><span>🎯</span>Páginas que generan clientes reales</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#94a3b8;"><span>🤖</span>IA incluida en todos los planes</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#94a3b8;"><span>🇲🇽</span>100% mexicano · precios en pesos</div>
+  </div>
+</div>
+</div>
+
+<!-- CTA -->
+<div class="cta-band" id="contacto">
+  <h2>¿Listo para unirte<br/><span>a la red?</span></h2>
+  <p>Escríbeme hoy — cotización gratis, sin contratos, sin tecnicismos.</p>
+  <a href="https://wa.me/12148011100?text=Hola%20Juan,%20quiero%20unirme%20a%20la%20red%20NexWeb" class="btn-glow" style="font-size:15px;padding:16px 36px;">
+    📲 Quiero unirme a la red
+  </a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-logo">Nexweb Studio</div>
+  <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin:14px 0;font-size:12px;">
+    <a href="#membresias" style="color:#475569;text-decoration:none;" onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color='#475569'">Planes</a>
+    <a href="#fundadores" style="color:#475569;text-decoration:none;" onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color='#475569'">Fundadores</a>
+    <a href="discover.html" style="color:#475569;text-decoration:none;" onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color='#475569'">Directorio</a>
+    <a href="network.html" style="color:#475569;text-decoration:none;" onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color='#475569'">La red</a>
+    <a href="https://wa.me/12148011100" target="_blank" style="color:#475569;text-decoration:none;" onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color='#475569'">Contacto</a>
+  </div>
+  Juan López · Hecho con ❤️ en Monterrey, México<br/>
+  <span style="font-size:11px;margin-top:4px;display:block;color:#2d3748;">© 2026 Nexweb Studio. Todos los derechos reservados.</span>
+</footer>
+
+<!-- WA FLOAT -->
+<!-- ── CHATBOT ── -->
+<style>
+.chat-bubble{position:fixed;bottom:22px;left:22px;z-index:300;}
+.chat-btn{width:54px;height:54px;background:linear-gradient(135deg,#2563eb,#0891b2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 0 0 0 rgba(37,99,235,0.5),0 8px 24px rgba(37,99,235,0.4);border:none;cursor:pointer;animation:chatFloat 3s ease-in-out infinite;}
+.chat-proactive{position:absolute;bottom:64px;left:0;background:#0a0f1e;border:1px solid #2563eb;border-radius:14px;border-bottom-left-radius:4px;padding:10px 14px;width:220px;font-size:13px;color:#f0f6ff;font-family:'Space Grotesk',sans-serif;line-height:1.5;box-shadow:0 8px 24px rgba(0,0,0,0.4);opacity:0;transform:translateY(8px);transition:all 0.4s ease;pointer-events:none;}
+.chat-proactive.visible{opacity:1;transform:translateY(0);pointer-events:auto;cursor:pointer;}
+.chat-proactive::after{content:'';position:absolute;bottom:-7px;left:16px;width:12px;height:12px;background:#0a0f1e;border-right:1px solid #2563eb;border-bottom:1px solid #2563eb;transform:rotate(45deg);}
+.chat-proactive-close{position:absolute;top:6px;right:8px;background:transparent;border:none;color:#475569;cursor:pointer;font-size:14px;line-height:1;}
+@keyframes chatFloat{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,0.5),0 8px 24px rgba(37,99,235,0.4);}50%{box-shadow:0 0 0 12px rgba(37,99,235,0),0 8px 24px rgba(37,99,235,0.4);}}
+.chat-window{display:none;position:fixed;bottom:88px;left:22px;width:340px;max-width:calc(100vw - 44px);background:#0a0f1e;border:1px solid #243050;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.6);z-index:300;flex-direction:column;}
+.chat-window.open{display:flex;}
+.chat-header{padding:14px 18px;background:linear-gradient(135deg,#1d4ed8,#0891b2);display:flex;align-items:center;justify-content:space-between;}
+.chat-header-left{display:flex;align-items:center;gap:10px;}
+.chat-avatar{width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.chat-name{font-size:13px;font-weight:700;color:#fff;font-family:'Space Grotesk',sans-serif;}
+.chat-status{font-size:10px;color:rgba(255,255,255,0.7);font-family:'JetBrains Mono',monospace;}
+.chat-close{background:transparent;border:none;color:rgba(255,255,255,0.7);cursor:pointer;font-size:18px;padding:0;}
+.chat-messages{height:320px;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;}
+.chat-messages::-webkit-scrollbar{width:4px;}
+.chat-messages::-webkit-scrollbar-track{background:transparent;}
+.chat-messages::-webkit-scrollbar-thumb{background:#243050;border-radius:2px;}
+.msg{max-width:82%;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.5;font-family:'Space Grotesk',sans-serif;}
+.msg-bot{background:#0f1628;border:1px solid #1a2540;color:#f0f6ff;align-self:flex-start;border-bottom-left-radius:4px;}
+.msg-user{background:linear-gradient(135deg,#1d4ed8,#0891b2);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
+.msg-typing{display:flex;gap:4px;align-items:center;padding:12px 14px;}
+.typing-dot{width:7px;height:7px;border-radius:50%;background:#475569;animation:typingAnim 1.2s infinite;}
+.typing-dot:nth-child(2){animation-delay:0.2s;}
+.typing-dot:nth-child(3){animation-delay:0.4s;}
+@keyframes typingAnim{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-6px);}}
+.chat-input-area{padding:12px;border-top:1px solid #1a2540;display:flex;gap:8px;}
+.chat-input{flex:1;background:#0f1628;border:1px solid #243050;border-radius:10px;padding:9px 14px;color:#f0f6ff;font-size:13px;font-family:'Space Grotesk',sans-serif;outline:none;resize:none;}
+.chat-input:focus{border-color:#2563eb;}
+.chat-send{width:38px;height:38px;background:#2563eb;border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;}
+.chat-send:hover{background:#1d4ed8;}
+.chat-suggestions{padding:0 12px 12px;display:flex;flex-wrap:wrap;gap:6px;}
+.chip{padding:5px 12px;background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.3);border-radius:20px;font-size:11px;color:#60a5fa;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:all 0.15s;white-space:nowrap;}
+.chip:hover{background:rgba(37,99,235,0.2);}
+</style>
+
+<div class="chat-bubble">
+  <div class="chat-proactive" id="chatProactive" onclick="openChatFromProactive()">
+    <button class="chat-proactive-close" onclick="closeProactive(event)">✕</button>
+    <span id="proactiveText"></span>
+  </div>
+  <button class="chat-btn" onclick="toggleChat()">🤖</button>
+</div>
+
+<div class="chat-window" id="chatWindow">
+  <div class="chat-header">
+    <div class="chat-header-left">
+      <div class="chat-avatar">🤖</div>
+      <div>
+        <div class="chat-name">Asistente Nexweb</div>
+        <div class="chat-status">● En línea · con IA</div>
+      </div>
+    </div>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="chat-suggestions" id="chatSuggestions">
+    <span class="chip" onclick="sendChip('¿Cuánto cuesta?')">💰 ¿Cuánto cuesta?</span>
+    <span class="chip" onclick="sendChip('¿Qué incluye?')">📋 ¿Qué incluye?</span>
+    <span class="chip" onclick="sendChip('¿Cuánto tarda?')">⏱ ¿Cuánto tarda?</span>
+    <span class="chip" onclick="sendChip('Quiero empezar')">🚀 Quiero empezar</span>
+  </div>
+  <div class="chat-input-area">
+    <textarea class="chat-input" id="chatInput" placeholder="Escribe tu pregunta..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}"></textarea>
+    <button class="chat-send" onclick="sendMessage()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+    </button>
+  </div>
+</div>
+
+
+
+<script>
+// ── CHATBOT ──────────────────────────────────────────
+let chatHistory = [];
+let chatOpen = false;
+
+// Proactive bubble — aparece a los 3 segundos con frase aleatoria
+const proactiveMsgs = [
+  "👀 Psst... si tu negocio no aparece en Google, le estás regalando clientes a tu competencia.",
+  "🚀 ¿Sabías que el 70% de los clientes busca en Google antes de visitar un negocio? ¿Ya apareces tú?",
+  "💡 Tu negocio merece más que un perfil de Instagram. Cuéntame qué haces y te muestro cómo se vería tu página.",
+  "🤖 Hola, soy la IA de Nexweb Studio. Puedo contarte en 30 segundos si tu negocio necesita una página web.",
+  "📈 Cada día sin página web es un día perdiendo clientes. ¿Cuánto te está costando eso?",
+  "✨ No vendemos páginas genéricas. Cada una es única como el negocio que representa. ¿El tuyo ya tiene la suya?",
+  "🎯 ¿Tienes negocio en México? Tengo algo que puede triplicar tus clientes. Pregúntame cómo.",
+  "💬 Muchos negocios en Monterrey ya tienen página con nosotros. ¿Tu competencia también la tiene?",
+];
+
+setTimeout(() => {
+  const p = document.getElementById('chatProactive');
+  if (p) {
+    const msg = proactiveMsgs[Math.floor(Math.random() * proactiveMsgs.length)];
+    document.getElementById('proactiveText').textContent = msg;
+    p.classList.add('visible');
+  }
+}, 3000);
+
+function closeProactive(e) {
+  e.stopPropagation();
+  document.getElementById('chatProactive').classList.remove('visible');
+}
+
+function openChatFromProactive() {
+  document.getElementById('chatProactive').classList.remove('visible');
+  if (!chatOpen) toggleChat();
+}
+
+function toggleChat() {
+  chatOpen = !chatOpen;
+  const win = document.getElementById('chatWindow');
+  win.classList.toggle('open', chatOpen);
+  if (chatOpen && chatHistory.length === 0) {
+    setTimeout(() => addBotMessage('¡Hola! 👋 Soy el asistente de **Nexweb Studio**. Puedo contarte sobre nuestros planes, precios y cómo hacemos tu página web. ¿En qué te puedo ayudar?'), 300);
+  }
+}
+
+function addBotMessage(text) {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'msg msg-bot';
+  div.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addUserMessage(text) {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'msg msg-user';
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showTyping() {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'msg msg-bot msg-typing';
+  div.id = 'typingIndicator';
+  div.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function hideTyping() {
+  const t = document.getElementById('typingIndicator');
+  if (t) t.remove();
+}
+
+function sendChip(text) {
+  document.getElementById('chatSuggestions').style.display = 'none';
+  sendMessageText(text);
+}
+
+function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  document.getElementById('chatSuggestions').style.display = 'none';
+  sendMessageText(text);
+}
+
+async function sendMessageText(text) {
+  addUserMessage(text);
+  chatHistory.push({ role: 'user', content: text });
+  showTyping();
+
+  try {
+    const systemPrompt = `Eres el asistente virtual de Nexweb Studio, una plataforma digital para negocios mexicanos fundada por Juan López.
+
+Eres amigable, directo y hablas en español mexicano informal (tuteo). Nunca uses "usted". Respuestas cortas y útiles, máximo 3-4 oraciones. Usa emojis con moderación.
+
+SOBRE NEXWEB STUDIO:
+Nexweb no es una agencia web. Es una red de negocios donde cada cliente obtiene una página profesional con IA, entra al directorio NexWeb, recibe tráfico de otros negocios de la red y accede a su panel de crecimiento con métricas reales. Cada negocio que se une aumenta el valor para todos.
+
+- Fundador: Juan López
+- WhatsApp: +1 (214) 801-1100
+- Página: nexweb-studio.vercel.app
+- Directorio de la red: nexweb-studio.vercel.app/discover.html
+
+PLANES:
+- Plan Básico $199/mes: Página profesional con IA, diseño único, SEO, entrada al directorio NexWeb, portal de cliente con métricas
+- Plan Pro $399/mes: Todo lo anterior + sistema de citas, galería, tráfico cruzado con la red, chatbot básico
+- Plan Elite $699/mes: Todo lo anterior + chatbot IA personalizado para tu negocio, automatizaciones, actualizaciones ilimitadas, prioridad en directorio
+
+PROGRAMA FUNDADORES (solo 10 lugares):
+- Setup fee GRATIS (normalmente $3,000-$10,000)
+- Precio congelado para siempre
+- Posición #1 en el directorio
+- Badge exclusivo "Fundador NexWeb"
+
+LA RED NEXWEB:
+- Cada negocio aparece en el directorio público
+- Tu página recibe tráfico de otros negocios de la red
+- Dashboard muestra cuántas visitas te generó la red este mes
+- Sistema de referidos: invita negocios y gana $200 en créditos por cada uno
+
+PROCESO:
+1. Platicamos por WhatsApp
+2. Diseñamos tu página en 24-48 hrs
+3. Apruebas y sale en vivo
+4. Entras a la red NexWeb automáticamente
+
+DIFERENCIADORES:
+- No somos agencia — somos una plataforma con efecto de red
+- IA incluida en todos los planes
+- Sin contratos, cancela cuando quieras
+- Diseño único por negocio, nunca templates
+- 100% mexicano, precios en pesos
+
+Si alguien quiere unirse o saber más, diles que le escriban a Juan: wa.me/12148011100`;
+
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer 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'
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        max_tokens: 1000,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          ...chatHistory
+        ]
+      })
+    });
+
+    const data = await response.json();
+    hideTyping();
+    const reply = data.choices?.[0]?.message?.content || 'Perdón, algo salió mal. Escríbele directo a Juan por WhatsApp 😊';
+    chatHistory.push({ role: 'assistant', content: reply });
+    addBotMessage(reply);
+  } catch (err) {
+    hideTyping();
+    addBotMessage('Hubo un error de conexión. Puedes escribirle directo a Juan por WhatsApp 👉 wa.me/12148011100');
+  }
+}
+</script>
+
+<script>
+// ── ANIMATED PARTICLES CANVAS ──
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [];
+
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+function randBetween(a,b){ return a + Math.random()*(b-a); }
+
+// create particles
+for(let i=0; i<55; i++){
+  particles.push({
+    x: randBetween(0,1), y: randBetween(0,1),
+    vx: randBetween(-0.06,0.06)*0.001,
+    vy: randBetween(-0.04,0.04)*0.001,
+    r: randBetween(1,2.5),
+    a: randBetween(0.2,0.7),
+    color: Math.random() > 0.5 ? '#60a5fa' : Math.random() > 0.5 ? '#22d3ee' : '#a78bfa'
+  });
+}
+
+function drawFrame(){
+  ctx.clearRect(0,0,W,H);
+
+  // update + draw particles
+  for(let p of particles){
+    p.x += p.vx; p.y += p.vy;
+    if(p.x < 0) p.x=1; if(p.x > 1) p.x=0;
+    if(p.y < 0) p.y=1; if(p.y > 1) p.y=0;
+    ctx.beginPath();
+    ctx.arc(p.x*W, p.y*H, p.r, 0, Math.PI*2);
+    ctx.fillStyle = p.color;
+    ctx.globalAlpha = p.a;
+    ctx.fill();
+  }
+
+  // draw connecting lines
+  ctx.globalAlpha = 1;
+  for(let i=0; i<particles.length; i++){
+    for(let j=i+1; j<particles.length; j++){
+      const dx = (particles[i].x - particles[j].x)*W;
+      const dy = (particles[i].y - particles[j].y)*H;
+      const dist = Math.sqrt(dx*dx+dy*dy);
+      if(dist < 120){
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x*W, particles[i].y*H);
+        ctx.lineTo(particles[j].x*W, particles[j].y*H);
+        ctx.strokeStyle = '#3b82f6';
+        ctx.globalAlpha = (1 - dist/120) * 0.12;
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+      }
+    }
+  }
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(drawFrame);
+}
+drawFrame();
+
+// ── MARQUEE CONTENT ──
+const items = [
+  'Páginas web profesionales','Diseño único','Chatbot con IA','Cobro automático',
+  'Clientes 24/7','Dominio incluido','Hosting incluido','SEO en Google',
+  'Páginas web profesionales','Diseño único','Chatbot con IA','Cobro automático',
+  'Clientes 24/7','Dominio incluido','Hosting incluido','SEO en Google',
+];
+const track = document.getElementById('mtrack');
+items.forEach(t => {
+  const el = document.createElement('div');
+  el.className = 'marquee-item';
+  el.innerHTML = `<span class="marquee-dot"></span>${t}`;
+  track.appendChild(el);
+});
+</script>
+
+<!-- ═══════════════════════════════════════════════════════
+     PORTAL GATE — Elige si eres cliente o admin
+     ═══════════════════════════════════════════════════════ -->
+<div id="portalGate" style="display:none;position:fixed;inset:0;background:rgba(4,6,13,0.92);z-index:900;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(12px);">
+  <div style="background:#0a0f1e;border:1px solid #243050;border-radius:24px;padding:36px;width:380px;max-width:100%;text-align:center;position:relative;">
+    <button onclick="closePortalGate()" style="position:absolute;top:16px;right:16px;background:transparent;border:none;color:#475569;cursor:pointer;font-size:18px;">✕</button>
+    <div id="secretLogo" onclick="secretTap()" style="width:56px;height:56px;background:linear-gradient(135deg,#1d4ed8,#0891b2);border-radius:14px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#fff;margin:0 auto 16px;box-shadow:0 0 24px rgba(37,99,235,0.4);cursor:pointer;user-select:none;">NW</div>
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:6px;font-family:'Space Grotesk',sans-serif;">Portal de clientes</h3>
+    <p style="font-size:12px;color:#475569;margin-bottom:28px;font-family:'JetBrains Mono',monospace;">Ingresa tu código para ver tus métricas</p>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <button onclick="switchToClient()" style="padding:14px;background:rgba(37,99,235,0.15);border:1px solid rgba(37,99,235,0.4);color:#60a5fa;border-radius:12px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;transition:all 0.15s;" onmouseover="this.style.background='rgba(37,99,235,0.25)'" onmouseout="this.style.background='rgba(37,99,235,0.15)'">
+        👤 Entrar con mi código
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     ADMIN PANEL (fullscreen overlay)
+     ═══════════════════════════════════════════════════════ -->
+<div id="adminOverlay" style="display:none;position:fixed;inset:0;z-index:950;background:#04060d;overflow-y:auto;">
+<style>
+.adm{font-family:'Space Grotesk',sans-serif;color:#f0f6ff;}
+.adm-mono{font-family:'JetBrains Mono',monospace;}
+.adm-surface{background:#0a0f1e;border:1px solid #1a2540;}
+.adm-btn-blue{background:#2563eb;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.15s;}
+.adm-btn-blue:hover{background:#1d4ed8;}
+.adm-input{width:100%;background:#0f1628;border:1px solid #243050;border-radius:8px;padding:10px 14px;color:#f0f6ff;font-size:13px;font-family:'Space Grotesk',sans-serif;outline:none;}
+.adm-input:focus{border-color:#2563eb;}
+.adm-select{width:100%;background:#0f1628;border:1px solid #243050;border-radius:8px;padding:10px 14px;color:#f0f6ff;font-size:13px;font-family:'Space Grotesk',sans-serif;outline:none;}
+.adm-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px);}
+.adm-modal-overlay.open{display:flex;}
+.adm-modal{background:#0a0f1e;border:1px solid #243050;border-radius:16px;padding:28px;width:420px;max-width:100%;max-height:90vh;overflow-y:auto;}
+</style>
+
+<!-- Admin login -->
+<div id="adminLogin" style="position:fixed;inset:0;background:#04060d;display:flex;align-items:center;justify-content:center;z-index:960;padding:20px;">
+  <div style="background:#0a0f1e;border:1px solid #243050;border-radius:20px;padding:36px;width:360px;max-width:100%;text-align:center;" class="adm">
+    <div style="width:48px;height:48px;background:#a78bfa;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:#fff;margin:0 auto 16px;">⚙️</div>
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:4px;">Panel Admin</h3>
+    <p style="font-size:12px;color:#475569;margin-bottom:24px;" class="adm-mono">Nexweb Studio · solo Juan</p>
+    <input class="adm-input" type="password" id="adminPassInput" placeholder="Contraseña" style="margin-bottom:12px;" onkeydown="if(event.key==='Enter')doAdminLogin()"/>
+    <button class="adm-btn-blue" style="width:100%;margin-bottom:10px;" onclick="doAdminLogin()">Entrar →</button>
+    <button onclick="closeAdmin()" style="width:100%;padding:8px;background:transparent;border:1px solid #1a2540;color:#475569;border-radius:8px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:13px;">Cancelar</button>
+    <div id="adminPassError" style="font-size:12px;color:#ef4444;margin-top:8px;display:none;">Contraseña incorrecta</div>
+  </div>
+</div>
+
+<!-- Admin dashboard -->
+<div id="adminDash" style="display:none;" class="adm">
+  <style>
+    .adm-grid-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px; }
+    .adm-main-grid { display:grid; grid-template-columns:1fr 260px; gap:16px; }
+    .adm-client-row { display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid #1a2540; flex-wrap:wrap; }
+    .adm-client-name { font-size:13px; font-weight:600; }
+    .adm-client-sub { font-size:11px; color:#475569; font-family:'JetBrains Mono',monospace; margin-top:1px; }
+    .adm-pill { padding:3px 9px; border-radius:20px; font-size:10px; font-weight:600; font-family:'JetBrains Mono',monospace; }
+    .adm-action-btn { padding:5px 10px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer; font-family:'Space Grotesk',sans-serif; border:1px solid; transition:all 0.15s; white-space:nowrap; }
+    @media(max-width:768px){
+      .adm-grid-stats { grid-template-columns:1fr 1fr !important; }
+      .adm-main-grid { grid-template-columns:1fr !important; }
+      .adm-client-row { gap:8px; }
+      #adminDash > div > div { padding:16px !important; }
+    }
+    @media(max-width:480px){
+      .adm-grid-stats { grid-template-columns:1fr 1fr !important; }
+    }
+  </style>
+
+  <!-- Top bar -->
+  <div style="position:sticky;top:0;z-index:10;background:rgba(4,6,13,0.97);backdrop-filter:blur(12px);border-bottom:1px solid #1a2540;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:28px;height:28px;background:#2563eb;border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:#fff;">NW</div>
+      <span style="font-size:14px;font-weight:700;">Admin</span>
+      <span style="font-size:10px;color:#22c55e;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);padding:2px 8px;border-radius:20px;" class="adm-mono">● live</span>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="adm-btn-blue" onclick="openNewClientModal()" style="font-size:12px;padding:7px 14px;">+ Agregar cliente</button>
+      <button onclick="closeAdmin()" style="padding:7px 14px;background:transparent;border:1px solid #1a2540;color:#94a3b8;border-radius:8px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:12px;">Salir</button>
+    </div>
+  </div>
+
+  <div style="padding:16px;max-width:1100px;margin:0 auto;">
+
+    <!-- Stats -->
+    <div class="adm-grid-stats">
+      <div class="adm-surface" style="border-radius:12px;padding:14px;border-top:2px solid #22c55e;">
+        <div style="font-size:9px;color:#475569;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;" class="adm-mono">MRR</div>
+        <div style="font-size:22px;font-weight:700;color:#22c55e;" id="adStatMRR">$0</div>
+        <div style="font-size:10px;color:#475569;margin-top:2px;" class="adm-mono">mensual</div>
+      </div>
+      <div class="adm-surface" style="border-radius:12px;padding:14px;border-top:2px solid #2563eb;">
+        <div style="font-size:9px;color:#475569;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;" class="adm-mono">Activos</div>
+        <div style="font-size:22px;font-weight:700;color:#60a5fa;" id="adStatActive">0</div>
+        <div style="font-size:10px;color:#475569;margin-top:2px;" class="adm-mono">en línea</div>
+      </div>
+      <div class="adm-surface" style="border-radius:12px;padding:14px;border-top:2px solid #38bdf8;">
+        <div style="font-size:9px;color:#475569;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;" class="adm-mono">Anual est.</div>
+        <div style="font-size:22px;font-weight:700;color:#38bdf8;" id="adStatYear">$0</div>
+        <div style="font-size:10px;color:#475569;margin-top:2px;" class="adm-mono">proyectado</div>
+      </div>
+      <div class="adm-surface" style="border-radius:12px;padding:14px;border-top:2px solid #f59e0b;cursor:pointer;" onclick="editFounderCount()">
+        <div style="font-size:9px;color:#475569;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;" class="adm-mono">Fundadores ✏️</div>
+        <div style="font-size:22px;font-weight:700;color:#f59e0b;" id="adStatFounders">10</div>
+        <div style="font-size:10px;color:#475569;margin-top:2px;" class="adm-mono">disponibles</div>
+      </div>
+    </div>
+
+    <!-- Main grid -->
+    <div class="adm-main-grid">
+
+      <!-- Clients list -->
+      <div class="adm-surface" style="border-radius:12px;overflow:hidden;">
+        <div style="padding:12px 16px;border-bottom:1px solid #1a2540;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <span style="font-size:13px;font-weight:600;">Clientes</span>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;">
+            <span onclick="setAdmFilter('all',this)" style="padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;background:rgba(37,99,235,0.15);color:#60a5fa;" class="adm-tab">Todos</span>
+            <span onclick="setAdmFilter('activo',this)" style="padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;color:#475569;" class="adm-tab">Activos</span>
+            <span onclick="setAdmFilter('suspendido',this)" style="padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;color:#475569;" class="adm-tab">Suspendidos</span>
+            <span onclick="setAdmFilter('prospecto',this)" style="padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;color:#f59e0b;border:1px solid rgba(245,158,11,0.2);" class="adm-tab" id="prospectoTab">⚡ Prospectos</span>
+          </div>
+        </div>
+        <div id="admClientList"><div style="padding:30px;text-align:center;color:#475569;font-size:12px;" class="adm-mono">Cargando...</div></div>
+      </div>
+
+      <!-- Right col -->
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <!-- Plan summary -->
+        <div class="adm-surface" style="border-radius:12px;overflow:hidden;">
+          <div style="padding:10px 14px;border-bottom:1px solid #1a2540;font-size:12px;font-weight:600;">Por plan</div>
+          <div style="padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div style="background:#0f1628;border:1px solid #1a2540;border-radius:8px;padding:10px;">
+              <div style="font-size:20px;font-weight:700;color:#60a5fa;" id="adSumB">0</div>
+              <div style="font-size:10px;color:#475569;margin-top:1px;" class="adm-mono">Básico</div>
+            </div>
+            <div style="background:#0f1628;border:1px solid #1a2540;border-radius:8px;padding:10px;">
+              <div style="font-size:20px;font-weight:700;color:#38bdf8;" id="adSumP">0</div>
+              <div style="font-size:10px;color:#475569;margin-top:1px;" class="adm-mono">Pro</div>
+            </div>
+            <div style="background:#0f1628;border:1px solid #1a2540;border-radius:8px;padding:10px;">
+              <div style="font-size:20px;font-weight:700;color:#a78bfa;" id="adSumE">0</div>
+              <div style="font-size:10px;color:#475569;margin-top:1px;" class="adm-mono">Elite</div>
+            </div>
+            <div style="background:#0f1628;border:1px solid #1a2540;border-radius:8px;padding:10px;">
+              <div style="font-size:20px;font-weight:700;color:#22c55e;" id="adSumMRR">$0</div>
+              <div style="font-size:10px;color:#475569;margin-top:1px;" class="adm-mono">MRR</div>
+            </div>
+          </div>
+        </div>
+        <!-- Activity -->
+        <div class="adm-surface" style="border-radius:12px;overflow:hidden;">
+          <div style="padding:10px 14px;border-bottom:1px solid #1a2540;font-size:12px;font-weight:600;">Actividad reciente</div>
+          <div id="admActivity"><div style="padding:20px;text-align:center;color:#475569;font-size:12px;" class="adm-mono">Cargando...</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal nuevo cliente -->
+<div class="adm-modal-overlay" id="admNewModal">
+  <div class="adm-modal adm">
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:20px;">➕ Nuevo cliente</h3>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px;">
+      <div><label style="font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:5px;" class="adm-mono">Nombre del negocio *</label><input class="adm-input" id="admInName" placeholder="OB Barbería"/></div>
+      <div><label style="font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:5px;" class="adm-mono">Giro *</label><input class="adm-input" id="admInType" placeholder="Barbería, Gym, Restaurante..."/></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div><label style="font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:5px;" class="adm-mono">Ciudad</label><input class="adm-input" id="admInCity" placeholder="Monterrey, NL"/></div>
+        <div><label style="font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:5px;" class="adm-mono">Plan</label>
+          <select class="adm-select" id="admInPlan">
+            <option value="basico">Básico — $199/mes</option>
+            <option value="pro">Pro — $399/mes</option>
+            <option value="elite">Elite — $699/mes</option>
+          </select>
+        </div>
+      </div>
+      <div><label style="font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:5px;" class="adm-mono">URL de su página</label><input class="adm-input" id="admInUrl" placeholder="sunegocio.vercel.app"/></div>
+      <div>
+        <label style="font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:5px;" class="adm-mono">Foto del negocio (directorio)</label>
+        <input class="adm-input" id="admInPhoto" placeholder="Pega URL de imagen o usa el botón de abajo" style="font-size:12px;margin-bottom:8px;"/>
+        <input type="file" id="admPhotoFile" accept="image/*" style="display:none;" onchange="previewAdmPhoto(this)"/>
+        <button type="button" onclick="document.getElementById('admPhotoFile').click()" style="padding:7px 14px;background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.3);color:#60a5fa;border-radius:7px;cursor:pointer;font-size:11px;font-family:'Space Grotesk',sans-serif;">📷 Subir foto</button>
+        <span style="font-size:11px;color:#475569;margin-left:8px;" class="adm-mono">o pega URL arriba</span>
+        <div id="admPhotoPreview" style="display:none;margin-top:10px;border-radius:10px;overflow:hidden;height:80px;background:#0f1628;border:1px solid #243050;"><img id="admPhotoPreviewImg" style="width:100%;height:100%;object-fit:cover;" src="" alt=""/></div>
+        <div style="font-size:10px;color:#475569;margin-top:5px;" class="adm-mono">Sin foto → ícono automático según el giro</div>
+      </div>
+      <label style="display:flex;align-items:center;gap:12px;background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:12px;cursor:pointer;">
+        <input type="checkbox" id="admInFounder" style="width:18px;height:18px;accent-color:#f59e0b;cursor:pointer;flex-shrink:0;"/>
+        <div><div style="font-size:13px;font-weight:600;color:#f59e0b;">⭐ Cliente Fundador</div><div style="font-size:11px;color:#475569;margin-top:1px;" class="adm-mono">Setup gratis · precio congelado · posición #1</div></div>
+      </label>
+      <div>
+        <label style="font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:5px;" class="adm-mono">Código de acceso</label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input class="adm-input" id="admInCode" placeholder="Auto-generado" style="font-family:'JetBrains Mono',monospace;letter-spacing:3px;text-transform:uppercase;font-size:15px;font-weight:700;"/>
+          <button onclick="document.getElementById('admInCode').value=genCode()" type="button" style="padding:10px 12px;background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.3);color:#60a5fa;border-radius:8px;cursor:pointer;font-size:12px;white-space:nowrap;font-family:'Space Grotesk',sans-serif;">🎲 Generar</button>
+        </div>
+        <div style="font-size:10px;color:#475569;margin-top:4px;" class="adm-mono">Puedes personalizarlo: BARBERIA, CALIS01, etc. Máx 10 caracteres.</div>
+      </div>
+    </div>
+    <div id="admCodeBox" style="display:none;background:#0f1628;border:1px solid #243050;border-radius:10px;padding:16px;text-align:center;margin-bottom:16px;">
+      <div style="font-size:11px;color:#475569;margin-bottom:6px;" class="adm-mono">Código de acceso del cliente</div>
+      <div style="font-size:28px;font-weight:700;letter-spacing:6px;color:#38bdf8;font-family:'JetBrains Mono',monospace;" id="admCodeVal">—</div>
+      <div style="font-size:11px;color:#22c55e;margin-top:6px;">✅ Comparte este código con tu cliente</div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="closeNewClientModal()" style="flex:1;padding:11px;background:transparent;border:1px solid #1a2540;color:#94a3b8;border-radius:8px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:13px;">Cancelar</button>
+      <button class="adm-btn-blue" id="admSaveBtn" style="flex:1;padding:11px;" onclick="admSaveClient()">Guardar →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal detalle cliente -->
+<div class="adm-modal-overlay" id="admDetailModal">
+  <div class="adm-modal adm" style="width:480px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <h3 style="font-size:16px;font-weight:700;" id="admDetailName">Cliente</h3>
+      <span id="admDFounderBadge" style="display:none;font-size:10px;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);color:#f59e0b;padding:3px 10px;border-radius:20px;" class="adm-mono">⭐ Fundador</span>
+    </div>
+
+    <!-- Info grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+      <div style="background:#0f1628;border:1px solid #1a2540;border-radius:8px;padding:10px;"><div style="font-size:13px;font-weight:600;" id="admDPlan">—</div><div style="font-size:9px;color:#475569;margin-top:2px;" class="adm-mono">Plan</div></div>
+      <div style="background:#0f1628;border:1px solid #1a2540;border-radius:8px;padding:10px;"><div style="font-size:13px;font-weight:600;color:#22c55e;" id="admDPrice">—</div><div style="font-size:9px;color:#475569;margin-top:2px;" class="adm-mono">Mensualidad</div></div>
+      <div style="background:#0f1628;border:1px solid #1a2540;border-radius:8px;padding:10px;"><div style="font-size:13px;font-weight:600;" id="admDStatus">—</div><div style="font-size:9px;color:#475569;margin-top:2px;" class="adm-mono">Estado</div></div>
+      <div style="background:#0f1628;border:1px solid #1a2540;border-radius:8px;padding:10px;"><div style="font-size:13px;font-weight:600;" id="admDSince">—</div><div style="font-size:9px;color:#475569;margin-top:2px;" class="adm-mono">Desde</div></div>
+    </div>
+
+    <!-- Código -->
+    <div style="background:#0f1628;border:1px solid #243050;border-radius:10px;padding:12px;text-align:center;margin-bottom:14px;">
+      <div style="font-size:10px;color:#475569;margin-bottom:4px;" class="adm-mono">Código de acceso del cliente</div>
+      <div style="font-size:22px;font-weight:700;letter-spacing:4px;color:#38bdf8;font-family:'JetBrains Mono',monospace;" id="admDCode">—</div>
+    </div>
+
+    <!-- Foto del negocio -->
+    <div style="background:#0a0f1e;border:1px solid #1a2540;border-radius:10px;padding:12px;margin-bottom:14px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div style="font-size:11px;font-weight:600;">🖼️ Foto en el directorio</div>
+        <div style="display:flex;gap:6px;">
+          <input type="file" id="detailPhotoFile" accept="image/*" style="display:none;" onchange="updateClientPhoto(this)"/>
+          <button onclick="document.getElementById('detailPhotoFile').click()" style="padding:5px 10px;background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.3);color:#60a5fa;border-radius:6px;cursor:pointer;font-size:11px;font-family:'Space Grotesk',sans-serif;">📷 Cambiar foto</button>
+        </div>
+      </div>
+      <div id="admDPhotoWrap" style="border-radius:8px;overflow:hidden;height:72px;background:#0f1628;border:1px solid #243050;display:flex;align-items:center;justify-content:center;">
+        <span id="admDPhotoIcon" style="font-size:32px;">🏢</span>
+        <img id="admDPhotoImg" style="display:none;width:100%;height:100%;object-fit:cover;" src="" alt=""/>
+      </div>
+    </div>
+
+    <!-- Pago del mes -->
+    <div style="background:#0a0f1e;border:1px solid #1a2540;border-radius:10px;padding:12px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+      <div>
+        <div style="font-size:12px;font-weight:600;">💳 Pago del mes</div>
+        <div id="admDPayStatus" style="font-size:11px;color:#475569;margin-top:2px;" class="adm-mono">Sin registrar</div>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button onclick="markPayment('pagado')" style="padding:6px 12px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#22c55e;border-radius:7px;cursor:pointer;font-size:11px;font-weight:600;font-family:'Space Grotesk',sans-serif;">✓ Pagado</button>
+        <button onclick="markPayment('pendiente')" style="padding:6px 12px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#ef4444;border-radius:7px;cursor:pointer;font-size:11px;font-weight:600;font-family:'Space Grotesk',sans-serif;">✗ Pendiente</button>
+      </div>
+    </div>
+
+    <!-- Notas -->
+    <div style="margin-bottom:14px;">
+      <label style="font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:5px;" class="adm-mono">📝 Notas internas</label>
+      <textarea id="admDNotes" class="adm-input" rows="2" placeholder="Ej: Pendiente actualizar fotos, paga los 10 de cada mes..." style="resize:vertical;font-size:12px;"></textarea>
+      <button onclick="saveNotes()" style="margin-top:6px;width:100%;padding:8px;background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.3);color:#60a5fa;border-radius:7px;cursor:pointer;font-size:12px;font-family:'Space Grotesk',sans-serif;">Guardar notas</button>
+    </div>
+
+    <!-- Form link panel (toggled) -->
+    <div id="admFormPanel" style="margin-bottom:0;"></div>
+
+    <!-- Acciones -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button onclick="admWhatsApp()" style="flex:1;min-width:80px;padding:10px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#22c55e;border-radius:8px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;">💬 WA</button>
+      <button onclick="sendOnboardingLink()" style="flex:1;min-width:80px;padding:10px;background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.3);color:#a78bfa;border-radius:8px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;">📋 Formulario</button>
+      <button id="admToggleBtn" onclick="admToggleStatus()" style="flex:1;min-width:80px;padding:10px;border-radius:8px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;">Suspender</button>
+      <button onclick="admDeleteClient()" style="padding:10px 13px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#ef4444;border-radius:8px;cursor:pointer;font-size:13px;">🗑</button>
+      <button onclick="closeDetailModal()" style="padding:10px 13px;background:transparent;border:1px solid #1a2540;color:#475569;border-radius:8px;cursor:pointer;font-size:12px;">✕</button>
+    </div>
+  </div>
+</div>
+</div><!-- end adminOverlay -->
+
+
+
+
+<!-- ═══════════════════════════════════════════════════════
+     CLIENT PORTAL (fullscreen overlay)
+     ═══════════════════════════════════════════════════════ -->
+<div id="clientOverlay" style="display:none;position:fixed;inset:0;z-index:950;background:#04060d;overflow-y:auto;">
+<style>
+.cli{font-family:'Space Grotesk',sans-serif;color:#f0f6ff;}
+.cli-mono{font-family:'JetBrains Mono',monospace;}
+</style>
+
+<!-- Client login -->
+<div id="clientLogin" style="position:fixed;inset:0;background:#04060d;display:flex;align-items:center;justify-content:center;z-index:960;padding:20px;">
+  <div style="background:#0a0f1e;border:1px solid #243050;border-radius:24px;padding:40px;width:400px;max-width:100%;text-align:center;" class="cli">
+    <div style="width:60px;height:60px;background:linear-gradient(135deg,#1d4ed8,#0891b2);border-radius:16px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;color:#fff;margin:0 auto 18px;box-shadow:0 0 28px rgba(37,99,235,0.4);">NW</div>
+    <h3 style="font-size:20px;font-weight:700;margin-bottom:4px;">Tu portal de cliente</h3>
+    <p style="font-size:12px;color:#475569;margin-bottom:28px;" class="cli-mono">Ingresa tu código de acceso</p>
+    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:20px;" id="cliCodeInputs"></div>
+    <button onclick="doClientAccess()" style="width:100%;padding:13px;background:#2563eb;border:none;color:#fff;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Space Grotesk',sans-serif;margin-bottom:10px;">Acceder →</button>
+    <div style="font-size:11px;color:#475569;" class="cli-mono">Juan te compartió un código de 6 caracteres</div>
+    <div id="cliLoginError" style="font-size:12px;color:#ef4444;margin-top:10px;display:none;">Código incorrecto. Verifica con Juan.</div>
+    <button onclick="closeClient()" style="margin-top:12px;padding:8px 16px;background:transparent;border:1px solid #1a2540;color:#475569;border-radius:8px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:12px;">Cancelar</button>
+  </div>
+</div>
+
+<!-- Client portal content -->
+<div id="clientPortal" style="display:none;" class="cli">
+  <div style="position:sticky;top:0;z-index:10;background:rgba(4,6,13,0.95);backdrop-filter:blur(12px);border-bottom:1px solid #1a2540;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:30px;height:30px;background:linear-gradient(135deg,#1d4ed8,#0891b2);border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#fff;">NW</div>
+      <span style="font-size:14px;font-weight:700;">Mi portal</span>
+    </div>
+    <button onclick="closeClient()" style="padding:7px 14px;background:transparent;border:1px solid #1a2540;color:#94a3b8;border-radius:8px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:12px;">Salir</button>
+  </div>
+
+  <div style="padding:28px;max-width:800px;margin:0 auto;">
+    <!-- Welcome -->
+    <div style="background:#0a0f1e;border:1px solid #1a2540;border-radius:16px;padding:22px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+      <div>
+        <h2 style="font-size:20px;font-weight:700;" id="cliName">—</h2>
+        <p style="font-size:12px;color:#475569;margin-top:3px;" class="cli-mono" id="cliType">—</p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <div id="cliFounderBadge" style="display:none;padding:5px 12px;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);border-radius:20px;font-size:11px;font-weight:600;color:#f59e0b;font-family:'JetBrains Mono',monospace;">⭐ Fundador NexWeb</div>
+        <span id="cliPlanPill" style="padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace;">—</span>
+      </div>
+    </div>
+
+    <!-- Status bar -->
+    <div style="display:flex;align-items:center;gap:8px;padding:11px 18px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:10px;margin-bottom:20px;">
+      <div style="width:8px;height:8px;border-radius:50%;background:#22c55e;animation:cliPulse 2s infinite;"></div>
+      <style>@keyframes cliPulse{0%,100%{opacity:1}50%{opacity:0.4}}</style>
+      <span style="font-size:13px;color:#22c55e;font-weight:500;">Tu página está en línea</span>
+      <span style="margin-left:auto;font-size:12px;color:#475569;" class="cli-mono" id="cliUrl"></span>
+    </div>
+
+    <!-- Metrics -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;">
+      <div style="background:#0a0f1e;border:1px solid #1a2540;border-radius:12px;padding:18px;border-top:2px solid #2563eb;">
+        <div style="font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;" class="cli-mono">Visitas este mes</div>
+        <div style="font-size:28px;font-weight:700;color:#60a5fa;" id="cliVisits">—</div>
+        <div style="font-size:11px;color:#475569;margin-top:4px;" class="cli-mono">personas a tu sitio</div>
+      </div>
+      <div style="background:#0a0f1e;border:1px solid #1a2540;border-radius:12px;padding:18px;border-top:2px solid #22c55e;">
+        <div style="font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;" class="cli-mono">Clics en WhatsApp</div>
+        <div style="font-size:28px;font-weight:700;color:#22c55e;" id="cliWA">—</div>
+        <div style="font-size:11px;color:#475569;margin-top:4px;" class="cli-mono">clientes potenciales</div>
+      </div>
+      <div style="background:#0a0f1e;border:1px solid #1a2540;border-radius:12px;padding:18px;border-top:2px solid #38bdf8;">
+        <div style="font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;" class="cli-mono">Conversión</div>
+        <div style="font-size:28px;font-weight:700;color:#38bdf8;" id="cliConv">—</div>
+        <div style="font-size:11px;color:#475569;margin-top:4px;" class="cli-mono">visitas → contacto</div>
+      </div>
+    </div>
+
+    <!-- Info grid -->
+    <div style="background:#0a0f1e;border:1px solid #1a2540;border-radius:12px;overflow:hidden;margin-bottom:20px;">
+      <div style="padding:13px 18px;border-bottom:1px solid #1a2540;font-size:13px;font-weight:600;">📋 Tu servicio</div>
+      <div style="padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div style="background:#0f1628;border:1px solid #1a2540;border-radius:8px;padding:12px;"><div style="font-size:14px;font-weight:600;" id="cliDPlan">—</div><div style="font-size:10px;color:#475569;margin-top:2px;" class="cli-mono">Plan activo</div></div>
+        <div style="background:#0f1628;border:1px solid #1a2540;border-radius:8px;padding:12px;"><div style="font-size:14px;font-weight:600;color:#22c55e;" id="cliDPrice">—</div><div style="font-size:10px;color:#475569;margin-top:2px;" class="cli-mono">Mensualidad</div></div>
+        <div style="background:#0f1628;border:1px solid #1a2540;border-radius:8px;padding:12px;"><div style="font-size:14px;font-weight:600;" id="cliDSince">—</div><div style="font-size:10px;color:#475569;margin-top:2px;" class="cli-mono">Cliente desde</div></div>
+        <div style="background:#0f1628;border:1px solid #1a2540;border-radius:8px;padding:12px;"><div style="font-size:14px;font-weight:600;" id="cliDStatus">—</div><div style="font-size:10px;color:#475569;margin-top:2px;" class="cli-mono">Estado</div></div>
+      </div>
+    </div>
+
+    <!-- Red NexWeb -->
+    <div style="background:#0a0f1e;border:1px solid #1a2540;border-radius:12px;overflow:hidden;margin-bottom:20px;">
+      <div style="padding:13px 18px;border-bottom:1px solid #1a2540;font-size:13px;font-weight:600;">🌐 Tu posición en la Red NexWeb</div>
+      <div style="padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div style="background:#0f1628;border:1px solid #1a2540;border-radius:8px;padding:12px;">
+          <div style="font-size:22px;font-weight:700;color:#a78bfa;" id="cliNetworkTraffic">—</div>
+          <div style="font-size:10px;color:#475569;margin-top:2px;" class="cli-mono">Visitas desde la red este mes</div>
+        </div>
+        <div style="background:#0f1628;border:1px solid #1a2540;border-radius:8px;padding:12px;">
+          <div style="font-size:22px;font-weight:700;color:#f59e0b;" id="cliDirectoryPos">—</div>
+          <div style="font-size:10px;color:#475569;margin-top:2px;" class="cli-mono">Posición en el directorio</div>
+        </div>
+      </div>
+      <div style="padding:0 16px 16px;">
+        <a href="discover.html" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);border-radius:10px;color:#a78bfa;text-decoration:none;font-size:13px;font-family:'Space Grotesk',sans-serif;">
+          Ver mi negocio en el directorio →
+        </a>
+      </div>
+    </div>
+
+    <!-- Referidos -->
+    <div style="background:#0a0f1e;border:1px solid #1a2540;border-radius:12px;overflow:hidden;margin-bottom:20px;">
+      <div style="padding:13px 18px;border-bottom:1px solid #1a2540;font-size:13px;font-weight:600;">🎁 Tu enlace de referido</div>
+      <div style="padding:16px;">
+        <p style="font-size:12px;color:#94a3b8;margin-bottom:12px;line-height:1.6;">Comparte este link con otros negocios. Si contratan usando tu enlace, recibes <strong style="color:#22c55e;">$200 pesos de crédito</strong> en tu mensualidad.</p>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div id="cliRefLink" style="flex:1;background:#0f1628;border:1px solid #243050;border-radius:8px;padding:10px 14px;font-size:12px;color:#60a5fa;font-family:'JetBrains Mono',monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">nexweb-studio.vercel.app/ref/...</div>
+          <button onclick="copyRefLink()" style="padding:10px 16px;background:#2563eb;border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:12px;font-family:'Space Grotesk',sans-serif;font-weight:600;white-space:nowrap;">Copiar</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;">
+          <div style="background:#0f1628;border:1px solid #1a2540;border-radius:8px;padding:12px;text-align:center;">
+            <div style="font-size:22px;font-weight:700;color:#22c55e;" id="cliReferrals">0</div>
+            <div style="font-size:10px;color:#475569;" class="cli-mono">Referidos activos</div>
+          </div>
+          <div style="background:#0f1628;border:1px solid #1a2540;border-radius:8px;padding:12px;text-align:center;">
+            <div style="font-size:22px;font-weight:700;color:#22c55e;" id="cliCredits">$0</div>
+            <div style="font-size:10px;color:#475569;" class="cli-mono">Créditos ganados</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div style="background:linear-gradient(135deg,rgba(37,99,235,0.15),rgba(56,189,248,0.1));border:1px solid rgba(37,99,235,0.3);border-radius:12px;padding:24px;text-align:center;">
+      <h3 style="font-size:16px;font-weight:700;margin-bottom:6px;">¿Necesitas algo? 💬</h3>
+      <p style="font-size:13px;color:#94a3b8;margin-bottom:16px;">Cambios en la página, nueva sección, actualizar info — escríbele a Juan directo</p>
+      <a href="https://wa.me/12148011100?text=Hola%20Juan%2C%20soy%20cliente%20de%20Nexweb%20Studio.%20Necesito%20ayuda%20con%20mi%20página." target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:#25D366;color:#fff;border-radius:10px;font-size:13px;font-weight:600;text-decoration:none;font-family:'Space Grotesk',sans-serif;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp a Juan
+      </a>
+    </div>
+  </div>
+</div>
+</div><!-- end clientOverlay -->
+
+
+<!-- ═══════════════════════════════════════════════════════
+     PORTAL JAVASCRIPT
+     ═══════════════════════════════════════════════════════ -->
+<script>
+const SB_URL = 'https://tsrbfazdcpbvufqtnvtx.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRzcmJmYXpkY3BidnVmcXRudnR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5MDUxOTUsImV4cCI6MjA4ODQ4MTE5NX0.0IcZI-9dorqHYuuKZ_2CdhlssPYjFBnCNWCb_yIK5FU';
+const sb = supabase.createClient(SB_URL, SB_KEY);
+const ADMIN_PASS = 'LOHJ010209$';
+const PLAN_PRICE = { basico:199, pro:399, elite:699 };
+const PLAN_NAME  = { basico:'Básico', pro:'Pro', elite:'Elite' };
+let secretCount = 0, secretTimer = null;
+
+// ── Gate ──────────────────────────────────
+function openPortalGate(){ document.getElementById('portalGate').style.display='flex'; secretCount=0; }
+function openClientDirect(){ openPortalGate(); }
+function closePortalGate(){ document.getElementById('portalGate').style.display='none'; secretCount=0; }
+function switchToAdmin(){ closePortalGate(); document.getElementById('adminOverlay').style.display='block'; document.body.style.overflow='hidden'; }
+function switchToClient(){ closePortalGate(); document.getElementById('clientOverlay').style.display='block'; document.body.style.overflow='hidden'; buildClientInputs(); }
+
+function secretTap(){
+  secretCount++;
+  clearTimeout(secretTimer);
+  secretTimer = setTimeout(()=>{ secretCount=0; }, 2000);
+  if(secretCount >= 7){
+    secretCount=0;
+    clearTimeout(secretTimer);
+    switchToAdmin();
+  }
+}
+
+// ── Admin ──────────────────────────────────
+function closeAdmin(){
+  document.getElementById('adminOverlay').style.display='none';
+  document.body.style.overflow='';
+  document.getElementById('adminPassInput').value='';
+  document.getElementById('adminLogin').style.display='flex';
+  document.getElementById('adminDash').style.display='none';
+}
+function doAdminLogin(){
+  if(document.getElementById('adminPassInput').value === ADMIN_PASS){
+    document.getElementById('adminLogin').style.display='none';
+    document.getElementById('adminDash').style.display='block';
+    loadAdmClients(); loadAdmActivity();
+  } else {
+    document.getElementById('adminPassError').style.display='block';
+  }
+}
+async function loadAdmClients(){
+  const {data}=await sb.from('clients').select('*').order('created_at',{ascending:false});
+  admClients=data||[];
+  // Seed A'Corde si no existe aún
+  if(!admClients.find(c=>c.name.toLowerCase().includes('corde'))){
+    await sb.from('clients').insert({
+      name:"A'Corde Organización Musical",
+      type:"Música para eventos",
+      plan:"elite",
+      setup_cost:0,
+      url:"acorde-musical.vercel.app",
+      access_code:"ACORDE",
+      status:"activo"
+    });
+    await sb.from('activities').insert({description:"<strong>A'Corde Organización Musical</strong> agregado · Plan Elite",type:'nuevo'});
+    const {data:d2}=await sb.from('clients').select('*').order('created_at',{ascending:false});
+    admClients=d2||[];
+  }
+  renderAdmStats(); renderAdmClients(); renderAdmSummary();
+}
+async function loadAdmActivity(){
+  const {data}=await sb.from('activities').select('*').order('created_at',{ascending:false}).limit(6);
+  const el=document.getElementById('admActivity');
+  if(!data||!data.length){el.innerHTML='<div style="padding:20px;text-align:center;color:#475569;font-size:12px;font-family:\'JetBrains Mono\',monospace;">Sin actividad aún</div>';return;}
+  el.innerHTML=data.map(a=>{
+    const t=new Date(a.created_at).toLocaleDateString('es-MX',{day:'numeric',month:'short'});
+    return `<div style="display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-bottom:1px solid #1a2540;">
+      <div style="font-size:18px;flex-shrink:0;">${{nuevo:'🟢',suspendido:'🔴',activado:'✅',metrica:'📊'}[a.type]||'📌'}</div>
+      <div><div style="font-size:12px;color:#94a3b8;" class="adm">${a.description}</div><div style="font-size:10px;color:#475569;font-family:'JetBrains Mono',monospace;margin-top:2px;">${t}</div></div>
+    </div>`;
+  }).join('');
+}
+function renderAdmStats(){
+  const active=admClients.filter(c=>c.status==='activo');
+  const prosp=admClients.filter(c=>c.status==='prospecto');
+  const mrr=active.reduce((s,c)=>s+PLAN_PRICE[c.plan],0);
+  document.getElementById('adStatMRR').textContent='$'+mrr.toLocaleString('es-MX');
+  document.getElementById('adStatActive').textContent=active.length;
+  document.getElementById('adStatYear').textContent='$'+(mrr*12).toLocaleString('es-MX');
+  // Update prospect tab badge
+  const pt=document.getElementById('prospectoTab');
+  if(pt) pt.textContent=`⚡ Prospectos${prosp.length?` (${prosp.length})`:''}`;
+}
+function renderAdmSummary(){
+  const a=admClients.filter(c=>c.status==='activo');
+  document.getElementById('adSumB').textContent=a.filter(c=>c.plan==='basico').length;
+  document.getElementById('adSumP').textContent=a.filter(c=>c.plan==='pro').length;
+  document.getElementById('adSumE').textContent=a.filter(c=>c.plan==='elite').length;
+  document.getElementById('adSumMRR').textContent='$'+a.reduce((s,c)=>s+PLAN_PRICE[c.plan],0).toLocaleString('es-MX');
+}
+function renderAdmClients(){
+  const list=document.getElementById('admClientList');
+  // Separate prospectos from regular clients
+  const nonProsp=admClients.filter(c=>c.status!=='prospecto');
+  const prospectos=admClients.filter(c=>c.status==='prospecto');
+
+  if(admFilter==='prospecto'){
+    renderProspectos(prospectos);
+    return;
+  }
+  const filtered=admFilter==='all'?nonProsp:nonProsp.filter(c=>c.status===admFilter);
+  if(!filtered.length){
+    list.innerHTML='<div style="padding:30px;text-align:center;color:#475569;font-size:12px;font-family:\'JetBrains Mono\',monospace;">Sin clientes aún · Agrega el primero 🚀</div>';
+    return;
+  }
+  const planColors={basico:'#60a5fa',pro:'#38bdf8',elite:'#a78bfa'};
+  list.innerHTML=filtered.map(c=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid #1a2540;">
+      <div style="flex:1;min-width:0;cursor:pointer;" onclick="openAdmDetail('${c.id}')">
+        <div style="font-size:13px;font-weight:600;">${c.name}${c.is_founder?'<span style="margin-left:6px;font-size:10px;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);color:#f59e0b;padding:2px 7px;border-radius:20px;font-family:JetBrains Mono,monospace;">⭐ Fundador</span>':''}</div>
+        <div style="font-size:11px;color:#475569;font-family:'JetBrains Mono',monospace;margin-top:2px;">${c.type||''}${c.city?' · '+c.city:''}</div>
+      </div>
+      <span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(0,0,0,0.3);color:${planColors[c.plan]||'#94a3b8'};border:1px solid ${planColors[c.plan]||'#94a3b8'}33;font-family:'JetBrains Mono',monospace;">${c.plan||'—'}</span>
+      <span style="font-size:12px;color:${c.status==='activo'?'#22c55e':'#ef4444'};font-family:'JetBrains Mono',monospace;">${c.status==='activo'?'● activo':'● suspendido'}</span>
+      <button onclick="quickToggle('${c.id}','${c.status}')" style="padding:5px 10px;background:${c.status==='activo'?'rgba(239,68,68,0.1)':'rgba(34,197,94,0.1)'};border:1px solid ${c.status==='activo'?'rgba(239,68,68,0.3)':'rgba(34,197,94,0.3)'};color:${c.status==='activo'?'#ef4444':'#22c55e'};border-radius:6px;cursor:pointer;font-size:11px;font-family:'Space Grotesk',sans-serif;white-space:nowrap;">${c.status==='activo'?'Suspender':'Activar'}</button>
+      <button onclick="quickDelete('${c.id}','${c.name}')" style="padding:5px 8px;background:transparent;border:1px solid #1a2540;color:#475569;border-radius:6px;cursor:pointer;font-size:12px;">🗑</button>
+    </div>`).join('');
+}
+function renderProspectos(list){
+  const el=document.getElementById('admClientList');
+  if(!list.length){
+    el.innerHTML='<div style="padding:30px;text-align:center;color:#475569;font-size:12px;font-family:\'JetBrains Mono\',monospace;">Sin prospectos aún · Comparte el link del formulario 🔗</div>';
+    return;
+  }
+  el.innerHTML=list.map(c=>{
+    let brief={}, designPrompt='';
+    try{ const n=JSON.parse(c.notes||'{}'); brief=n.brief||{}; designPrompt=n.designPrompt||''; }catch(e){}
+    return `
+    <div style="border-bottom:1px solid #1a2540;padding:16px 18px;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:200px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <span style="font-size:13px;font-weight:600;">${c.name}</span>
+            <span style="font-size:10px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.25);color:#f59e0b;padding:2px 8px;border-radius:20px;font-family:JetBrains Mono,monospace;">⚡ Prospecto</span>
+          </div>
+          <div style="font-size:11px;color:#475569;font-family:'JetBrains Mono',monospace;">${c.type||''}${c.city?' · '+c.city:''} · ${c.since||''}</div>
+          ${brief.goal?`<div style="font-size:11px;color:#94a3b8;margin-top:3px;">🎯 ${brief.goal}</div>`:''}
+          ${brief.whatsapp?`<div style="font-size:11px;color:#94a3b8;margin-top:2px;">📲 ${brief.whatsapp}</div>`:''}
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button onclick="openProspectPrompt('${c.id}')" style="padding:5px 10px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);color:#60a5fa;border-radius:6px;cursor:pointer;font-size:11px;font-family:'Space Grotesk',sans-serif;white-space:nowrap;">🎨 Ver prompt</button>
+          <button onclick="convertProspect('${c.id}')" style="padding:5px 10px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#22c55e;border-radius:6px;cursor:pointer;font-size:11px;font-family:'Space Grotesk',sans-serif;white-space:nowrap;font-weight:600;">✓ Convertir a cliente</button>
+          <button onclick="quickDelete('${c.id}','${c.name}')" style="padding:5px 8px;background:transparent;border:1px solid #1a2540;color:#475569;border-radius:6px;cursor:pointer;font-size:12px;">🗑</button>
+        </div>
+      </div>
+      ${designPrompt?`
+      <div style="margin-top:12px;background:#0a0f1e;border:1px solid #243050;border-radius:8px;padding:12px;display:none;" id="prompt_${c.id}">
+        <div style="font-size:10px;color:#60a5fa;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">🎨 Prompt de diseño generado</div>
+        <div style="font-size:12px;color:#cbd5e1;line-height:1.7;font-style:italic;">${designPrompt}</div>
+        <button onclick="navigator.clipboard.writeText(${JSON.stringify(designPrompt)}).then(()=>alert('✅ Copiado'))" style="margin-top:10px;padding:6px 14px;background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.3);color:#60a5fa;border-radius:6px;cursor:pointer;font-size:11px;font-family:'Space Grotesk',sans-serif;">Copiar prompt</button>
+      </div>`:''}
+    </div>`;
+  }).join('');
+}
+function openProspectPrompt(id){
+  const el=document.getElementById('prompt_'+id);
+  if(!el)return;
+  el.style.display=el.style.display==='none'?'block':'none';
+}
+async function convertProspect(id){
+  const c=admClients.find(x=>x.id===id);
+  if(!c)return;
+  if(!confirm(`¿Convertir a "${c.name}" en cliente activo?
+
+Podrás asignarle plan, código de acceso y demás datos.`))return;
+  // Pre-fill new client modal with prospect data
+  let brief={};
+  try{ brief=JSON.parse(c.notes||'{}').brief||{}; }catch(e){}
+  openNewClientModal();
+  document.getElementById('admInName').value=c.name||'';
+  document.getElementById('admInType').value=c.type||'';
+  document.getElementById('admInCity').value=c.city||brief.city||'';
+  // Delete prospect after save
+  window._convertingProspectId=id;
+}
+async function quickToggle(id,currentStatus){
+  const ns=currentStatus==='activo'?'suspendido':'activo';
+  await sb.from('clients').update({status:ns}).eq('id',id);
+  await loadAdmClients();
+}
+async function quickDelete(id,name){
+  if(!confirm(`¿Eliminar a "${name}"? Esta acción no se puede deshacer.`))return;
+  await sb.from('clients').delete().eq('id',id);
+  await loadAdmClients();
+}
+async function admDeleteClient(){
+  if(!admSelectedClient)return;
+  if(!confirm(`¿Eliminar a "${admSelectedClient.name}"?`))return;
+  await sb.from('clients').delete().eq('id',admSelectedClient.id);
+  closeDetailModal();
+  await loadAdmClients();
+}
+function editFounderCount(){
+  const curr=parseInt(document.getElementById('adStatFounders').textContent)||10;
+  const val=prompt('¿Cuántos lugares fundadores disponibles?',curr);
+  if(val===null||isNaN(parseInt(val)))return;
+  const n=Math.max(0,Math.min(10,parseInt(val)));
+  document.getElementById('adStatFounders').textContent=n;
+  const fc=document.getElementById('founderCount');
+  const fcs=document.getElementById('founderCountSmall');
+  if(fc)fc.textContent=n;
+  if(fcs)fcs.textContent=n;
+  localStorage.setItem('nexweb-founder-count',n);
+}
+function setAdmFilter(mode,el){
+  admFilter=mode;
+  document.querySelectorAll('.adm-tab').forEach(t=>{t.style.background='';t.style.color='#475569';});
+  el.style.background='rgba(37,99,235,0.15)';el.style.color='#60a5fa';
+  renderAdmClients();
+}
+function openNewClientModal(){ 
+  document.getElementById('admNewModal').classList.add('open'); 
+  document.getElementById('admCodeBox').style.display='none'; 
+  document.getElementById('admSaveBtn').style.display='block';
+  document.getElementById('admInCode').value=genCode();
+}
+function closeNewClientModal(){ 
+  document.getElementById('admNewModal').classList.remove('open'); 
+  ['admInName','admInType','admInCity','admInUrl','admInCode'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';}); 
+  const f=document.getElementById('admInFounder');if(f)f.checked=false; 
+}
+function previewAdmPhoto(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const b64 = e.target.result;
+    document.getElementById('admInPhoto').value = b64;
+    document.getElementById('admPhotoPreviewImg').src = b64;
+    document.getElementById('admPhotoPreview').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+function genCode(){ const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; return Array.from({length:6},()=>c[Math.floor(Math.random()*c.length)]).join(''); }
+async function admSaveClient(){
+  const name=document.getElementById('admInName').value.trim();
+  const type=document.getElementById('admInType').value.trim();
+  const city=document.getElementById('admInCity').value.trim()||'Monterrey, NL';
+  const plan=document.getElementById('admInPlan').value;
+  const url=document.getElementById('admInUrl').value.trim();
+  const photo_url=document.getElementById('admInPhoto').value.trim()||null;
+  const is_founder=document.getElementById('admInFounder').checked;
+  if(!name||!type){alert('Nombre y giro son requeridos');return;}
+  const access_code=(document.getElementById('admInCode').value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'')||genCode()).substring(0,10);
+  const ref_code=name.replace(/[^a-zA-Z0-9]/g,'').substring(0,8).toUpperCase()||access_code;
+  const since=new Date().toISOString().slice(0,10);
+  try{
+    const {data,error}=await sb.from('clients').insert({name,type,city,plan,url,photo_url,access_code,is_founder,ref_code,since,status:'activo'}).select();
+    if(error){alert('❌ Error al guardar:\n'+error.message);return;}
+    await sb.from('activities').insert({description:`<strong>${name}</strong> agregado · Plan ${plan}${is_founder?' · ⭐ Fundador':''}`,type:'nuevo'});
+    document.getElementById('admCodeBox').style.display='block';
+    document.getElementById('admCodeVal').textContent=access_code;
+    document.getElementById('admSaveBtn').style.display='none';
+    // If converting from prospect, delete the old prospect record
+    if(window._convertingProspectId){
+      await sb.from('clients').delete().eq('id',window._convertingProspectId);
+      window._convertingProspectId=null;
+    }
+    await loadAdmClients(); await loadAdmActivity();
+  }catch(e){
+    alert('❌ Error inesperado:\n'+e.message);
+  }
+}
+async function openAdmDetail(id){
+  admSelectedClient=admClients.find(c=>c.id===id);
+  if(!admSelectedClient)return;
+  const c=admSelectedClient;
+  document.getElementById('admDetailName').textContent=c.name;
+  document.getElementById('admDFounderBadge').style.display=c.is_founder?'inline':'none';
+  document.getElementById('admDPlan').textContent=PLAN_NAME[c.plan];
+  document.getElementById('admDPrice').textContent='$'+PLAN_PRICE[c.plan]+'/mes';
+  document.getElementById('admDStatus').textContent=c.status==='activo'?'🟢 Activo':'🔴 Suspendido';
+  document.getElementById('admDSince').textContent=c.since?new Date(c.since).toLocaleDateString('es-MX',{day:'numeric',month:'short',year:'numeric'}):'—';
+  document.getElementById('admDCode').textContent=c.access_code||'—';
+  document.getElementById('admDNotes').value=c.notes||'';
+  // Photo
+  const photoImg = document.getElementById('admDPhotoImg');
+  const photoIcon = document.getElementById('admDPhotoIcon');
+  if(c.photo_url){
+    photoImg.src = c.photo_url;
+    photoImg.style.display = 'block';
+    photoIcon.style.display = 'none';
+  } else {
+    photoImg.style.display = 'none';
+    photoIcon.style.display = 'block';
+    photoIcon.textContent = getNichoIcon(c.type);
+  }
+  // Payment status
+  const month=new Date().toISOString().slice(0,7);
+  const payKey=`pay_${c.id}_${month}`;
+  const payStatus=localStorage.getItem(payKey);
+  document.getElementById('admDPayStatus').textContent=payStatus==='pagado'?'✅ Pagado este mes':payStatus==='pendiente'?'❌ Pendiente':'Sin registrar';
+  document.getElementById('admDPayStatus').style.color=payStatus==='pagado'?'#22c55e':payStatus==='pendiente'?'#ef4444':'#475569';
+  const btn=document.getElementById('admToggleBtn');
+  btn.textContent=c.status==='activo'?'Suspender':'Activar';
+  btn.style.cssText=c.status==='activo'?'flex:1;padding:10px;border-radius:8px;cursor:pointer;font-family:Space Grotesk,sans-serif;font-size:12px;font-weight:600;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#ef4444;':'flex:1;padding:10px;border-radius:8px;cursor:pointer;font-family:Space Grotesk,sans-serif;font-size:12px;font-weight:600;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#22c55e;';
+  document.getElementById('admDetailModal').classList.add('open');
+}
+function getNichoIcon(type){
+  const t=(type||'').toLowerCase();
+  if(t.includes('barber')||t.includes('salón')||t.includes('salon')||t.includes('cabello')||t.includes('peluq')) return '✂️';
+  if(t.includes('gym')||t.includes('fitness')||t.includes('calist')||t.includes('cross')||t.includes('box')) return '💪';
+  if(t.includes('restaur')||t.includes('taquería')||t.includes('comida')||t.includes('café')||t.includes('cafeter')) return '🍽️';
+  if(t.includes('spa')||t.includes('bienes')||t.includes('masaj')||t.includes('relax')) return '🧖';
+  if(t.includes('clínica')||t.includes('clinica')||t.includes('salud')||t.includes('dental')||t.includes('méd')) return '🏥';
+  if(t.includes('boutique')||t.includes('moda')||t.includes('ropa')||t.includes('tienda')) return '👗';
+  if(t.includes('foto')||t.includes('photo')||t.includes('estudio')) return '📷';
+  if(t.includes('música')||t.includes('musica')||t.includes('banda')||t.includes('coro')) return '🎵';
+  if(t.includes('inmo')||t.includes('bienes raíces')||t.includes('depart')) return '🏠';
+  return '🏢';
+}
+async function updateClientPhoto(input){
+  if(!admSelectedClient||!input.files[0]) return;
+  const file = input.files[0];
+  const reader = new FileReader();
+  reader.onload = async e => {
+    const b64 = e.target.result;
+    // Update in Supabase
+    const {error} = await sb.from('clients').update({photo_url:b64}).eq('id',admSelectedClient.id);
+    if(error){alert('❌ Error guardando foto:\n'+error.message);return;}
+    admSelectedClient.photo_url = b64;
+    const idx = admClients.findIndex(c=>c.id===admSelectedClient.id);
+    if(idx!==-1) admClients[idx].photo_url = b64;
+    // Update preview
+    const img = document.getElementById('admDPhotoImg');
+    const icon = document.getElementById('admDPhotoIcon');
+    img.src = b64; img.style.display='block'; icon.style.display='none';
+    alert('✅ Foto actualizada');
+  };
+  reader.readAsDataURL(file);
+}
+function markPayment(status){
+  if(!admSelectedClient)return;
+  const month=new Date().toISOString().slice(0,7);
+  const payKey=`pay_${admSelectedClient.id}_${month}`;
+  localStorage.setItem(payKey,status);
+  document.getElementById('admDPayStatus').textContent=status==='pagado'?'✅ Pagado este mes':'❌ Pendiente';
+  document.getElementById('admDPayStatus').style.color=status==='pagado'?'#22c55e':'#ef4444';
+}
+async function saveNotes(){
+  if(!admSelectedClient)return;
+  const notes=document.getElementById('admDNotes').value;
+  await sb.from('clients').update({notes}).eq('id',admSelectedClient.id);
+  admSelectedClient.notes=notes;
+  const idx=admClients.findIndex(c=>c.id===admSelectedClient.id);
+  if(idx!==-1) admClients[idx].notes=notes;
+  alert('✅ Notas guardadas');
+}
+function admWhatsApp(){
+  if(!admSelectedClient)return;
+  const c=admSelectedClient;
+  const msg=encodeURIComponent(`Hola ${c.name.split(' ')[0]} 👋, soy Juan de NexWeb Studio. Te escribo sobre tu página web.`);
+  window.open(`https://wa.me/?text=${msg}`,'_blank');
+}
+function sendOnboardingLink(){
+  if(!admSelectedClient)return;
+  const c=admSelectedClient;
+  const panel=document.getElementById('admFormPanel');
+  if(panel.innerHTML.trim()){panel.innerHTML='';panel.style.marginBottom='0';return;}
+  const base=window.location.origin;
+  const link=`${base}/onboarding.html?cliente=${encodeURIComponent(c.name)}&code=${encodeURIComponent(c.access_code||'')}`;
+  const waMsg=`Hola ${c.name.split(' ')[0]} 👋\n\nSoy Juan de NexWeb Studio. Para diseñar tu página perfecta, llena este cuestionario — tarda menos de 5 minutos:\n\n${link}\n\nCualquier pregunta me dices 😊`;
+  const safeLink=link.replace(/'/g,"\\'");
+  panel.style.marginBottom='14px';
+  panel.innerHTML=`
+    <div style="background:#0a0f1e;border:1px solid rgba(167,139,250,0.2);border-radius:10px;padding:14px;">
+      <div style="font-size:10px;color:#475569;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">📋 Formulario para <span style="color:#a78bfa;">${c.name}</span></div>
+      <div style="background:#080d1a;border:1px solid #1a2540;border-radius:8px;padding:10px;font-size:11px;color:#a78bfa;font-family:'JetBrains Mono',monospace;word-break:break-all;margin-bottom:10px;line-height:1.5;user-select:all;">${link}</div>
+      <div style="display:flex;gap:8px;">
+        <button id="copyLinkBtn" onclick="copyFormLink('${safeLink}')" style="flex:1;padding:9px;background:rgba(37,99,235,0.12);border:1px solid rgba(37,99,235,0.3);color:#60a5fa;border-radius:7px;cursor:pointer;font-size:11px;font-weight:600;font-family:'Space Grotesk',sans-serif;">📋 Copiar link</button>
+        <a href="https://wa.me/?text=${encodeURIComponent(waMsg)}" target="_blank" style="flex:1;padding:9px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#22c55e;border-radius:7px;font-size:11px;font-weight:600;font-family:'Space Grotesk',sans-serif;text-decoration:none;display:flex;align-items:center;justify-content:center;">💬 Enviar por WA</a>
+      </div>
+      <div style="font-size:10px;color:#475569;margin-top:8px;font-family:'JetBrains Mono',monospace;">El cliente abre el link → contesta el chat con IA → el brief llega a tu WhatsApp automáticamente</div>
+    </div>`;
+}
+function copyFormLink(link){
+  const btn=document.getElementById('copyLinkBtn');
+  navigator.clipboard.writeText(link).then(()=>{
+    if(btn){btn.textContent='✅ Copiado';setTimeout(()=>{btn.textContent='📋 Copiar link';},2000);}
+  }).catch(()=>{
+    const el=document.createElement('textarea');el.value=link;
+    document.body.appendChild(el);el.select();document.execCommand('copy');
+    document.body.removeChild(el);
+    if(btn){btn.textContent='✅ Copiado';setTimeout(()=>{btn.textContent='📋 Copiar link';},2000);}
+  });
+}
+function escAdm(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function copyFormLink(){
+  const link='https://nexweb-studio.vercel.app/onboarding.html';
+  navigator.clipboard.writeText(link).then(()=>{
+    const btn=document.getElementById('copyLinkBtn');
+    if(btn){btn.textContent='✅ Copiado';setTimeout(()=>{btn.textContent='Copiar';},2000);}
+  }).catch(()=>{
+    const el=document.getElementById('admFormLink');
+    if(el){const range=document.createRange();range.selectNode(el);window.getSelection().removeAllRanges();window.getSelection().addRange(range);}
+  });
+}
+function sendFormViaWA(){
+  if(!admSelectedClient)return;
+  const name=admSelectedClient.name||'';
+  const msg=encodeURIComponent(
+    `Hola ${name}! 👋 Soy Juan de Nexweb Studio.\n\n` +
+    `Para empezar a diseñar tu página web necesito un poco de información sobre tu negocio.\n\n` +
+    `Llena este formulario — son solo unos minutos y me ayuda a hacerte algo realmente personalizado:\n\n` +
+    `🔗 https://nexweb-studio.vercel.app/onboarding.html\n\n` +
+    `Cuando lo termines te aviso y arrancamos 🚀`
+  );
+  window.open(`https://wa.me/?text=${msg}`,'_blank');
+}
+function closeDetailModal(){
+  document.getElementById('admDetailModal').classList.remove('open');
+  const fp=document.getElementById('admFormPanel');
+  if(fp){fp.innerHTML='';fp.style.marginBottom='0';}
+  admSelectedClient=null;
+}
+async function admToggleStatus(){
+  if(!admSelectedClient)return;
+  const ns=admSelectedClient.status==='activo'?'suspendido':'activo';
+  await sb.from('clients').update({status:ns}).eq('id',admSelectedClient.id);
+  await sb.from('activities').insert({description:`<strong>${admSelectedClient.name}</strong> ${ns==='activo'?'reactivado':'suspendido'}`,type:ns==='activo'?'activado':'suspendido',client_id:admSelectedClient.id});
+  closeDetailModal(); await loadAdmClients(); await loadAdmActivity();
+}
+async function admSaveMetrics(){
+  if(!admSelectedClient)return;
+  const month=new Date().toISOString().slice(0,7);
+  const metrics={
+    client_id:admSelectedClient.id, month,
+    visits:parseInt(document.getElementById('admMetVisits').value)||0,
+    new_users:parseInt(document.getElementById('admMetNew').value)||0,
+    returning_users:parseInt(document.getElementById('admMetReturn').value)||0,
+    avg_time:parseFloat(document.getElementById('admMetTime').value)||0,
+    bounce_rate:parseInt(document.getElementById('admMetBounce').value)||0,
+    scroll_depth:parseInt(document.getElementById('admMetScroll').value)||0,
+    whatsapp_clicks:parseInt(document.getElementById('admMetWA').value)||0,
+    leads:parseInt(document.getElementById('admMetLeads').value)||0,
+    chatbot_convs:parseInt(document.getElementById('admMetChat').value)||0,
+    src_google:parseInt(document.getElementById('admMetGoogle').value)||0,
+    src_ig:parseInt(document.getElementById('admMetIG').value)||0,
+    src_direct:parseInt(document.getElementById('admMetDirect').value)||0,
+    src_other:parseInt(document.getElementById('admMetOther').value)||0,
+    mobile_pct:parseInt(document.getElementById('admMetMobile').value)||0,
+    desktop_pct:parseInt(document.getElementById('admMetDesktop').value)||0,
+    google_position:parseInt(document.getElementById('admMetSEO').value)||0,
+  };
+  await sb.from('metrics').upsert(metrics,{onConflict:'client_id,month'});
+  await sb.from('activities').insert({description:`Métricas actualizadas para <strong>${admSelectedClient.name}</strong>`,type:'metrica',client_id:admSelectedClient.id});
+  alert('✅ Métricas guardadas'); await loadAdmActivity();
+}
+
+// Load founder count from localStorage
+(function(){
+  const saved=localStorage.getItem('nexweb-founder-count');
+  const n=saved!==null?parseInt(saved):10;
+  const fc=document.getElementById('founderCount');
+  const fcs=document.getElementById('founderCountSmall');
+  if(fc)fc.textContent=n;
+  if(fcs)fcs.textContent=n;
+  const admFc=document.getElementById('adStatFounders');
+  if(admFc)admFc.textContent=n;
+})();
+
+// ── Client portal ──────────────────────────────────
+function buildClientInputs(){
+  const wrap=document.getElementById('cliCodeInputs');
+  if(wrap.children.length)return;
+  for(let i=0;i<6;i++){
+    const inp=document.createElement('input');
+    inp.style.cssText='width:46px;height:54px;background:#0f1628;border:2px solid #243050;border-radius:10px;text-align:center;font-size:20px;font-weight:700;color:#f0f6ff;font-family:JetBrains Mono,monospace;outline:none;text-transform:uppercase;transition:border-color 0.15s;';
+    inp.maxLength=1;
+    inp.addEventListener('focus',e=>e.target.style.borderColor='#2563eb');
+    inp.addEventListener('blur',e=>e.target.style.borderColor='#243050');
+    inp.addEventListener('input',e=>{ e.target.value=e.target.value.toUpperCase(); if(e.target.value&&i<5)wrap.children[i+1].focus(); });
+    inp.addEventListener('keydown',e=>{ if(e.key==='Backspace'&&!e.target.value&&i>0)wrap.children[i-1].focus(); if(e.key==='Enter')doClientAccess(); });
+    inp.addEventListener('paste',e=>{ const t=(e.clipboardData.getData('text')).replace(/\s/g,'').toUpperCase().slice(0,6); [...t].forEach((c,j)=>{if(wrap.children[j])wrap.children[j].value=c;}); e.preventDefault(); wrap.children[Math.min(t.length,5)].focus(); });
+    wrap.appendChild(inp);
+  }
+  wrap.children[0].focus();
+}
+function closeClient(){
+  document.getElementById('clientOverlay').style.display='none';
+  document.body.style.overflow='';
+  document.getElementById('clientLogin').style.display='flex';
+  document.getElementById('clientPortal').style.display='none';
+  document.getElementById('cliLoginError').style.display='none';
+  const w=document.getElementById('cliCodeInputs');
+  [...w.children].forEach(c=>c.value='');
+}
+async function doClientAccess(){
+  const wrap=document.getElementById('cliCodeInputs');
+  const code=[...wrap.children].map(c=>c.value).join('').toUpperCase();
+  if(code.length<6){alert('Ingresa los 6 caracteres');return;}
+  const {data,error}=await sb.from('clients').select('*').eq('access_code',code).single();
+  if(error||!data){ document.getElementById('cliLoginError').style.display='block'; [...wrap.children].forEach(c=>c.value=''); wrap.children[0].focus(); return; }
+  showClientPortal(data);
+}
+async function showClientPortal(c){
+  document.getElementById('clientLogin').style.display='none';
+  document.getElementById('clientPortal').style.display='block';
+  document.getElementById('cliName').textContent=c.name;
+  document.getElementById('cliType').textContent=c.type+(c.city?' · '+c.city:'');
+  const pill=document.getElementById('cliPlanPill');
+  const pc={basico:'rgba(96,165,250,0.15);color:#60a5fa;border:1px solid rgba(96,165,250,0.3)',pro:'rgba(56,189,248,0.15);color:#38bdf8;border:1px solid rgba(56,189,248,0.3)',elite:'rgba(167,139,250,0.15);color:#a78bfa;border:1px solid rgba(167,139,250,0.3)'};
+  pill.style.cssText='padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;font-family:JetBrains Mono,monospace;background:'+pc[c.plan];
+  pill.textContent=PLAN_NAME[c.plan];
+  // Founder badge
+  if(c.is_founder) document.getElementById('cliFounderBadge').style.display='block';
+  if(c.url){ const h=c.url.startsWith('http')?c.url:'https://'+c.url; document.getElementById('cliUrl').innerHTML=`<a href="${h}" target="_blank" style="color:#38bdf8;text-decoration:none;">${c.url} ↗</a>`; }
+  document.getElementById('cliDPlan').textContent=PLAN_NAME[c.plan];
+  document.getElementById('cliDPrice').textContent='$'+PLAN_PRICE[c.plan]+'/mes';
+  document.getElementById('cliDSince').textContent=new Date(c.since).toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('cliDStatus').textContent=c.status==='activo'?'🟢 En línea':'🔴 Suspendido';
+  // Referral link
+  const refCode=c.ref_code||c.access_code;
+  const refUrl=`nexweb-studio.vercel.app/ref/${refCode}`;
+  document.getElementById('cliRefLink').textContent=refUrl;
+  document.getElementById('cliRefLink').dataset.url=refUrl;
+  // Directory position
+  const {data:allClients}=await sb.from('clients').select('id,is_founder,created_at').eq('status','activo').order('created_at',{ascending:true});
+  if(allClients){
+    const pos=allClients.findIndex(cl=>cl.id===c.id)+1;
+    document.getElementById('cliDirectoryPos').textContent=c.is_founder?'#'+pos+' ⭐':'#'+pos;
+  }
+  // Metrics
+  const month=new Date().toISOString().slice(0,7);
+  const {data:m}=await sb.from('metrics').select('*').eq('client_id',c.id).eq('month',month).single();
+  if(m){
+    document.getElementById('cliVisits').textContent=m.visits.toLocaleString('es-MX');
+    document.getElementById('cliWA').textContent=(m.whatsapp_clicks||0).toLocaleString('es-MX');
+    document.getElementById('cliConv').textContent=m.visits>0?((m.whatsapp_clicks/m.visits)*100).toFixed(1)+'%':'—';
+    document.getElementById('cliNetworkTraffic').textContent=(m.network_traffic||0).toLocaleString('es-MX');
+  }
+  // Referrals count
+  const {data:refs}=await sb.from('clients').select('id').eq('ref_code',refCode).eq('status','activo');
+  const refCount=refs?refs.length:0;
+  document.getElementById('cliReferrals').textContent=refCount;
+  document.getElementById('cliCredits').textContent='$'+(refCount*200).toLocaleString('es-MX');
+}
+function copyRefLink(){
+  const el=document.getElementById('cliRefLink');
+  navigator.clipboard.writeText('https://'+el.dataset.url).then(()=>{
+    el.textContent='¡Copiado! ✅';
+    setTimeout(()=>el.textContent=el.dataset.url,2000);
+  });
+}
+</script>
+</body>
+</html>
