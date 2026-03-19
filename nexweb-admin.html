@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Nexweb Studio — Admin</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 :root {
@@ -160,6 +161,33 @@ body::after{content:'';position:fixed;bottom:-200px;right:-200px;width:500px;hei
 
 @media(max-width:1100px){.stats{grid-template-columns:repeat(2,1fr);}.content-grid{grid-template-columns:1fr;}}
 @media(max-width:700px){.sidebar{display:none;}.main{padding:16px;}.stats{grid-template-columns:1fr 1fr;}.client-row{grid-template-columns:1fr auto;}}
+
+/* Search + Bulk */
+.search-bar{display:flex;align-items:center;gap:8px;padding:8px 16px;border-bottom:1px solid var(--border);}
+.search-input{flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:7px 12px;color:var(--text);font-size:12px;font-family:var(--sans);outline:none;}
+.search-input:focus{border-color:var(--blue);}
+.bulk-bar{display:none;align-items:center;gap:8px;padding:8px 16px;background:rgba(37,99,235,0.08);border-bottom:1px solid rgba(37,99,235,0.2);}
+.bulk-bar.visible{display:flex;}
+.bulk-count{font-size:12px;color:var(--blue-light);font-family:var(--mono);}
+.btn-bulk{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--sans);border:1px solid;}
+.btn-bulk-suspend{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3);color:var(--red);}
+.btn-bulk-activate{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.3);color:var(--green);}
+.client-row{display:grid;grid-template-columns:auto 1fr auto auto auto;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);transition:background 0.15s;cursor:pointer;}
+.client-checkbox{width:16px;height:16px;cursor:pointer;accent-color:var(--blue);}
+
+/* Chart */
+.chart-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px;}
+.chart-panel h3{font-size:13px;font-weight:600;margin-bottom:16px;color:var(--text);}
+.chart-wrap{height:180px;position:relative;}
+
+/* Payment history */
+.payment-table{width:100%;border-collapse:collapse;font-size:12px;}
+.payment-table th{color:var(--text3);font-weight:500;font-family:var(--mono);padding:6px 8px;text-align:left;border-bottom:1px solid var(--border);}
+.payment-table td{padding:8px;border-bottom:1px solid rgba(26,37,64,0.5);color:var(--text2);}
+.payment-table td:first-child{color:var(--text);font-weight:600;font-family:var(--mono);}
+.badge-paid{background:rgba(34,197,94,0.1);color:var(--green);border:1px solid rgba(34,197,94,0.2);padding:2px 8px;border-radius:20px;font-family:var(--mono);font-size:10px;}
+.badge-pending{background:rgba(245,158,11,0.1);color:#f59e0b;border:1px solid rgba(245,158,11,0.2);padding:2px 8px;border-radius:20px;font-family:var(--mono);font-size:10px;}
+.badge-overdue{background:rgba(239,68,68,0.1);color:var(--red);border:1px solid rgba(239,68,68,0.2);padding:2px 8px;border-radius:20px;font-family:var(--mono);font-size:10px;}
 </style>
 </head>
 <body>
@@ -213,6 +241,7 @@ body::after{content:'';position:fixed;bottom:-200px;right:-200px;width:500px;hei
       </div>
       <div class="header-right">
         <div class="status-badge"><div class="status-dot"></div> Sistema activo</div>
+        <button class="btn-new" style="background:rgba(34,197,94,0.15);color:var(--green);border:1px solid rgba(34,197,94,0.3);" onclick="exportCSV()">📥 CSV</button>
         <button class="btn-new" onclick="openNewModal()">+ Nuevo cliente</button>
       </div>
     </div>
@@ -240,6 +269,12 @@ body::after{content:'';position:fixed;bottom:-200px;right:-200px;width:500px;hei
       </div>
     </div>
 
+    <!-- MRR Chart -->
+    <div class="chart-panel">
+      <h3>📈 Ingresos mensuales recurrentes (MRR)</h3>
+      <div class="chart-wrap"><canvas id="mrrChart"></canvas></div>
+    </div>
+
     <div class="content-grid">
       <div>
         <div class="panel">
@@ -252,7 +287,19 @@ body::after{content:'';position:fixed;bottom:-200px;right:-200px;width:500px;hei
             <div class="tab" onclick="setFilter('activo',this)">Activos</div>
             <div class="tab" onclick="setFilter('suspendido',this)">Suspendidos</div>
           </div>
+          <div class="search-bar">
+            <input class="search-input" id="searchInput" placeholder="🔍 Buscar por nombre o ciudad..." oninput="renderClients()"/>
+          </div>
+          <div class="bulk-bar" id="bulkBar">
+            <span class="bulk-count" id="bulkCount">0 seleccionados</span>
+            <button class="btn-bulk btn-bulk-suspend" onclick="bulkAction('suspendido')">Suspender</button>
+            <button class="btn-bulk btn-bulk-activate" onclick="bulkAction('activo')">Activar</button>
+            <button class="btn-bulk" style="background:transparent;border-color:var(--border2);color:var(--text3);" onclick="clearSelection()">✕ Limpiar</button>
+          </div>
           <div id="clientList"><div class="loading">Cargando clientes...</div></div>
+          <div id="loadMoreWrap" style="display:none;padding:12px;text-align:center;">
+            <button onclick="loadMoreActivity()" style="padding:6px 16px;background:transparent;border:1px solid var(--border2);color:var(--text3);border-radius:6px;cursor:pointer;font-family:var(--sans);font-size:12px;">Ver más actividad</button>
+          </div>
         </div>
       </div>
 
@@ -352,7 +399,20 @@ body::after{content:'';position:fixed;bottom:-200px;right:-200px;width:500px;hei
           <input class="form-input" id="metricWA" type="number" placeholder="0"/>
         </div>
       </div>
-      <button class="btn-save" style="width:100%" onclick="saveMetrics()">Guardar métricas</button>
+      <button class="btn-save" style="width:100%;margin-bottom:12px;" onclick="saveMetrics()">Guardar métricas</button>
+    </div>
+    <div class="detail-section">
+      <div class="detail-title">Historial de pagos</div>
+      <div id="paymentHistory" style="margin-bottom:12px;"><div style="font-size:12px;color:var(--text3);font-family:var(--mono);">Cargando...</div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <select class="form-select" id="payMonth" style="flex:1;min-width:120px;"></select>
+        <select class="form-select" id="payStatus" style="width:120px;">
+          <option value="paid">Pagado ✅</option>
+          <option value="pending">Pendiente ⏳</option>
+          <option value="overdue">Vencido 🔴</option>
+        </select>
+        <button class="btn-save" onclick="registerPayment()" style="flex:0;">Registrar</button>
+      </div>
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeDetailModal()">Cerrar</button>
@@ -364,13 +424,24 @@ body::after{content:'';position:fixed;bottom:-200px;right:-200px;width:500px;hei
 <script>
 const SUPABASE_URL = 'https://tsrbfazdcpbvufqtnvtx.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRzcmJmYXpkY3BidnVmcXRudnR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5MDUxOTUsImV4cCI6MjA4ODQ4MTE5NX0.0IcZI-9dorqHYuuKZ_2CdhlssPYjFBnCNWCb_yIK5FU';
-const ADMIN_PASSWORD = 'nexweb2026'; // Cambia esta contraseña
+const ADMIN_PASSWORD = 'nexweb2026';
 const PLAN_PRICE = {basico:199, pro:399, elite:699};
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let clients = [];
 let filterMode = 'all';
 let selectedClient = null;
+let selectedIds = new Set();
+let activityOffset = 0;
+let mrrChart = null;
+
+// ── Utility ──────────────────────────────────────────────
+function esc(str) {
+  return String(str||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+async function sendEmail(type, data) {
+  try { await fetch('/api/send-email',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type,data})}); } catch(_){}
+}
 
 // ── Auth ──────────────────────────────────────────────
 function doLogin() {
@@ -404,18 +475,78 @@ async function loadClients() {
   renderStats();
   renderClients();
   renderSummary();
+  buildMrrChart();
   document.getElementById('navCount').textContent = clients.length;
 }
 
 async function loadActivity() {
-  const {data} = await sb.from('activities').select('*').order('created_at',{ascending:false}).limit(6);
+  activityOffset = 0;
+  const {data} = await sb.from('activities').select('*').order('created_at',{ascending:false}).limit(50);
   renderActivity(data || []);
+}
+
+async function loadMoreActivity() {
+  activityOffset += 50;
+  const {data} = await sb.from('activities').select('*').order('created_at',{ascending:false}).range(activityOffset, activityOffset+49);
+  const list = document.getElementById('activityList');
+  if (!data || !data.length) { document.getElementById('loadMoreWrap').style.display='none'; return; }
+  const icons = {nuevo:'🟢',suspendido:'🔴',activado:'✅',metrica:'📊',info:'📌'};
+  const clases = {nuevo:'act-green',suspendido:'act-red',activado:'act-green',metrica:'act-blue',info:'act-blue'};
+  list.innerHTML += data.map(a => {
+    const t = new Date(a.created_at).toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'})+' · '+new Date(a.created_at).toLocaleDateString('es-MX',{day:'numeric',month:'short'});
+    return `<div class="activity-item"><div class="act-icon ${clases[a.type]||'act-blue'}">${icons[a.type]||'📌'}</div><div><div class="act-text">${a.description}</div><div class="act-time">${t}</div></div></div>`;
+  }).join('');
+}
+
+// ── MRR Chart ──────────────────────────────────────────────
+function buildMrrChart() {
+  const canvas = document.getElementById('mrrChart');
+  if (!canvas) return;
+  // Build last 6 months MRR by counting active clients that joined on or before each month
+  const months = [];
+  const mrrData = [];
+  const now = new Date();
+  for (let i=5; i>=0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+    const label = d.toLocaleDateString('es-MX',{month:'short',year:'2-digit'});
+    const monthKey = d.toISOString().slice(0,7);
+    months.push(label);
+    const mrr = clients
+      .filter(c => c.status==='activo' && c.since && c.since.slice(0,7) <= monthKey)
+      .reduce((s,c) => s + (PLAN_PRICE[c.plan]||0), 0);
+    mrrData.push(mrr);
+  }
+  if (mrrChart) mrrChart.destroy();
+  mrrChart = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: months,
+      datasets: [{
+        label: 'MRR $MXN',
+        data: mrrData,
+        borderColor: '#2563eb',
+        backgroundColor: 'rgba(37,99,235,0.08)',
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: '#2563eb',
+        pointRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: 'rgba(26,37,64,0.8)' }, ticks: { color: '#475569', font: { size: 11 } } },
+        y: { grid: { color: 'rgba(26,37,64,0.8)' }, ticks: { color: '#475569', font: { size: 11 }, callback: v => '$'+v.toLocaleString('es-MX') } }
+      }
+    }
+  });
 }
 
 // ── Render ──────────────────────────────────────────────
 function renderStats() {
   const active = clients.filter(c=>c.status==='activo');
-  const mrr = active.reduce((s,c)=>s+PLAN_PRICE[c.plan],0);
+  const mrr = active.reduce((s,c)=>s+(PLAN_PRICE[c.plan]||0),0);
   document.getElementById('statMRR').textContent = '$'+mrr.toLocaleString('es-MX');
   document.getElementById('statActive').textContent = active.length;
   const yearly = mrr*12;
@@ -425,7 +556,9 @@ function renderStats() {
 
 function renderClients() {
   const list = document.getElementById('clientList');
+  const q = (document.getElementById('searchInput')?.value||'').toLowerCase();
   let filtered = filterMode==='all' ? clients : clients.filter(c=>c.status===filterMode);
+  if (q) filtered = filtered.filter(c => esc(c.name).toLowerCase().includes(q) || (c.city||'').toLowerCase().includes(q) || (c.type||'').toLowerCase().includes(q));
   if (!filtered.length) {
     list.innerHTML = '<div class="empty-state">Sin clientes · Agrega el primero 🚀</div>';
     return;
@@ -433,14 +566,16 @@ function renderClients() {
   list.innerHTML = filtered.map(c => {
     const isActive = c.status === 'activo';
     const plan = c.plan.charAt(0).toUpperCase()+c.plan.slice(1);
-    const since = new Date(c.since).toLocaleDateString('es-MX',{month:'short',year:'numeric'});
-    return `<div class="client-row" onclick="openDetail('${c.id}')">
+    const since = c.since ? new Date(c.since).toLocaleDateString('es-MX',{month:'short',year:'numeric'}) : '—';
+    const checked = selectedIds.has(c.id) ? 'checked' : '';
+    return `<div class="client-row" onclick="handleRowClick(event,'${esc(c.id)}')">
+      <input class="client-checkbox" type="checkbox" ${checked} onclick="event.stopPropagation();toggleSelect('${esc(c.id)}')"/>
       <div>
-        <div class="client-name">${c.name}</div>
-        <div class="client-meta">${c.type} · desde ${since}</div>
+        <div class="client-name">${esc(c.name)}</div>
+        <div class="client-meta">${esc(c.type||'')}${c.city?' · '+esc(c.city):''} · desde ${since}</div>
       </div>
-      <span class="plan-badge plan-${c.plan}">${plan}</span>
-      <span class="client-amount">$${PLAN_PRICE[c.plan].toLocaleString('es-MX')}/mes</span>
+      <span class="plan-badge plan-${esc(c.plan)}">${esc(plan)}</span>
+      <span class="client-amount">$${(PLAN_PRICE[c.plan]||0).toLocaleString('es-MX')}/mes</span>
       <div style="display:flex;align-items:center;gap:6px">
         <span class="dot ${isActive?'dot-green':'dot-red'}"></span>
         <span class="status-text ${isActive?'status-green':'status-red'}">${isActive?'En línea':'Suspendido'}</span>
@@ -449,30 +584,63 @@ function renderClients() {
   }).join('');
 }
 
+function handleRowClick(e, id) {
+  if (e.target.type === 'checkbox') return;
+  openDetail(id);
+}
+
+function toggleSelect(id) {
+  if (selectedIds.has(id)) selectedIds.delete(id);
+  else selectedIds.add(id);
+  updateBulkBar();
+  renderClients();
+}
+
+function updateBulkBar() {
+  const bar = document.getElementById('bulkBar');
+  document.getElementById('bulkCount').textContent = selectedIds.size + ' seleccionados';
+  bar.classList.toggle('visible', selectedIds.size > 0);
+}
+
+function clearSelection() {
+  selectedIds.clear();
+  updateBulkBar();
+  renderClients();
+}
+
+async function bulkAction(newStatus) {
+  if (!selectedIds.size) return;
+  const ids = [...selectedIds];
+  for (const id of ids) {
+    await sb.from('clients').update({status:newStatus}).eq('id',id);
+    const c = clients.find(x=>x.id===id);
+    const tipo = newStatus==='activo'?'activado':'suspendido';
+    await sb.from('activities').insert({description:`<strong>${esc(c?.name||id)}</strong> ${newStatus==='activo'?'reactivado':'suspendido'} (bulk)`,type:tipo,client_id:id});
+  }
+  clearSelection();
+  await loadClients();
+  await loadActivity();
+}
+
 function renderSummary() {
   const active = clients.filter(c=>c.status==='activo');
   document.getElementById('sumBasico').textContent = active.filter(c=>c.plan==='basico').length;
   document.getElementById('sumPro').textContent = active.filter(c=>c.plan==='pro').length;
   document.getElementById('sumElite').textContent = active.filter(c=>c.plan==='elite').length;
-  const mrr = active.reduce((s,c)=>s+PLAN_PRICE[c.plan],0);
+  const mrr = active.reduce((s,c)=>s+(PLAN_PRICE[c.plan]||0),0);
   document.getElementById('sumMRR').textContent = '$'+mrr.toLocaleString('es-MX');
 }
 
 function renderActivity(acts) {
   const list = document.getElementById('activityList');
-  if (!acts.length) {
-    list.innerHTML = '<div class="empty-state">Sin actividad aún</div>';
-    return;
-  }
+  if (!acts.length) { list.innerHTML = '<div class="empty-state">Sin actividad aún</div>'; return; }
   const icons = {nuevo:'🟢',suspendido:'🔴',activado:'✅',metrica:'📊',info:'📌'};
   const clases = {nuevo:'act-green',suspendido:'act-red',activado:'act-green',metrica:'act-blue',info:'act-blue'};
   list.innerHTML = acts.map(a => {
-    const t = new Date(a.created_at).toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'}) + ' · ' + new Date(a.created_at).toLocaleDateString('es-MX',{day:'numeric',month:'short'});
-    return `<div class="activity-item">
-      <div class="act-icon ${clases[a.type]||'act-blue'}">${icons[a.type]||'📌'}</div>
-      <div><div class="act-text">${a.description}</div><div class="act-time">${t}</div></div>
-    </div>`;
+    const t = new Date(a.created_at).toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'})+' · '+new Date(a.created_at).toLocaleDateString('es-MX',{day:'numeric',month:'short'});
+    return `<div class="activity-item"><div class="act-icon ${clases[a.type]||'act-blue'}">${icons[a.type]||'📌'}</div><div><div class="act-text">${a.description}</div><div class="act-time">${t}</div></div></div>`;
   }).join('');
+  document.getElementById('loadMoreWrap').style.display = acts.length >= 50 ? 'block' : 'none';
 }
 
 // ── Filter ──────────────────────────────────────────────
@@ -481,6 +649,28 @@ function setFilter(mode, el) {
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
   renderClients();
+}
+
+// ── CSV Export ──────────────────────────────────────────────
+function exportCSV() {
+  const active = clients.filter(c=>c.status==='activo');
+  const headers = ['Nombre','Tipo','Ciudad','Plan','Precio/mes','Desde','URL','Estado'];
+  const rows = active.map(c => [
+    `"${(c.name||'').replace(/"/g,'""')}"`,
+    `"${(c.type||'').replace(/"/g,'""')}"`,
+    `"${(c.city||'').replace(/"/g,'""')}"`,
+    c.plan,
+    PLAN_PRICE[c.plan]||0,
+    c.since||'',
+    `"${(c.url||'').replace(/"/g,'""')}"`,
+    c.status
+  ].join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'nexweb-clientes-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click(); URL.revokeObjectURL(url);
 }
 
 // ── New Client ──────────────────────────────────────────────
@@ -494,12 +684,10 @@ function closeNewModal() {
   document.getElementById('newModal').classList.remove('open');
   ['inName','inType','inSetup','inUrl'].forEach(id=>document.getElementById(id).value='');
 }
-
 function genCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   return Array.from({length:6}, ()=>chars[Math.floor(Math.random()*chars.length)]).join('');
 }
-
 async function saveClient() {
   const name = document.getElementById('inName').value.trim();
   const type = document.getElementById('inType').value.trim();
@@ -507,17 +695,15 @@ async function saveClient() {
   const setup_cost = parseInt(document.getElementById('inSetup').value)||0;
   const url = document.getElementById('inUrl').value.trim();
   if (!name||!type) { alert('Nombre y tipo son requeridos'); return; }
-  
   const access_code = genCode();
   const {error} = await sb.from('clients').insert({name,type,plan,setup_cost,url,access_code});
   if (error) { alert('Error: '+error.message); return; }
-  
-  await sb.from('activities').insert({description:`<strong>${name}</strong> agregado como cliente · Plan ${plan}`, type:'nuevo'});
-  
+  await sb.from('activities').insert({description:`<strong>${esc(name)}</strong> agregado como cliente · Plan ${esc(plan)}`,type:'nuevo'});
+  // Notify admin by email
+  await sendEmail('new_client', {name, plan, city: ''});
   document.getElementById('newCodeBox').style.display = 'block';
   document.getElementById('newCodeVal').textContent = access_code;
   document.getElementById('btnSave').style.display = 'none';
-  
   await loadClients();
   await loadActivity();
 }
@@ -527,18 +713,56 @@ async function openDetail(id) {
   selectedClient = clients.find(c=>c.id===id);
   if (!selectedClient) return;
   const c = selectedClient;
-  const since = new Date(c.since).toLocaleDateString('es-MX',{month:'short',year:'numeric'});
+  const since = c.since ? new Date(c.since).toLocaleDateString('es-MX',{month:'short',year:'numeric'}) : '—';
   document.getElementById('detailName').textContent = c.name;
   document.getElementById('detailPlan').textContent = c.plan.charAt(0).toUpperCase()+c.plan.slice(1);
-  document.getElementById('detailAmount').textContent = '$'+PLAN_PRICE[c.plan]+'/mes';
+  document.getElementById('detailAmount').textContent = '$'+(PLAN_PRICE[c.plan]||0)+'/mes';
   document.getElementById('detailStatus').textContent = c.status==='activo' ? '🟢 En línea' : '🔴 Suspendido';
   document.getElementById('detailSince').textContent = since;
-  document.getElementById('detailCode').textContent = c.access_code;
+  document.getElementById('detailCode').textContent = c.access_code||'—';
   const btn = document.getElementById('btnToggle');
   btn.textContent = c.status==='activo' ? 'Suspender' : 'Activar';
   btn.className = 'btn-action '+(c.status==='activo'?'btn-suspend':'btn-activate');
+  // Populate payment month selector
+  const sel = document.getElementById('payMonth');
+  sel.innerHTML = '';
+  for (let i=0;i<12;i++) {
+    const d = new Date(new Date().getFullYear(), new Date().getMonth()-i, 1);
+    const val = d.toISOString().slice(0,7);
+    const lbl = d.toLocaleDateString('es-MX',{month:'long',year:'numeric'});
+    const opt = document.createElement('option');
+    opt.value=val; opt.textContent=lbl;
+    sel.appendChild(opt);
+  }
+  await loadPaymentHistory(c.id);
   document.getElementById('detailModal').classList.add('open');
 }
+
+async function loadPaymentHistory(clientId) {
+  const wrap = document.getElementById('paymentHistory');
+  const {data} = await sb.from('payments').select('*').eq('client_id',clientId).order('month',{ascending:false}).limit(12);
+  if (!data || !data.length) {
+    wrap.innerHTML = '<div style="font-size:12px;color:var(--text3);font-family:var(--mono);padding:8px 0;">Sin registros de pago aún</div>';
+    return;
+  }
+  const statusBadge = s => s==='paid'?'<span class="badge-paid">Pagado</span>':s==='overdue'?'<span class="badge-overdue">Vencido</span>':'<span class="badge-pending">Pendiente</span>';
+  wrap.innerHTML = `<table class="payment-table"><thead><tr><th>Mes</th><th>Monto</th><th>Estado</th><th>Fecha</th></tr></thead><tbody>
+    ${data.map(p=>`<tr><td>${p.month||''}</td><td>$${(p.amount||0).toLocaleString('es-MX')}</td><td>${statusBadge(p.status)}</td><td style="color:var(--text3);font-family:var(--mono);font-size:11px;">${p.paid_at?new Date(p.paid_at).toLocaleDateString('es-MX',{day:'numeric',month:'short'}):'—'}</td></tr>`).join('')}
+  </tbody></table>`;
+}
+
+async function registerPayment() {
+  if (!selectedClient) return;
+  const month = document.getElementById('payMonth').value;
+  const status = document.getElementById('payStatus').value;
+  const amount = PLAN_PRICE[selectedClient.plan]||0;
+  const paid_at = status==='paid' ? new Date().toISOString() : null;
+  const {error} = await sb.from('payments').upsert({client_id:selectedClient.id,month,amount,status,paid_at},{onConflict:'client_id,month'});
+  if (error) { alert('Error: '+error.message); return; }
+  if (status==='overdue') await sendEmail('payment_overdue',{name:selectedClient.name,month,amount});
+  await loadPaymentHistory(selectedClient.id);
+}
+
 function closeDetailModal() { document.getElementById('detailModal').classList.remove('open'); selectedClient=null; }
 
 async function toggleClientStatus() {
@@ -546,7 +770,8 @@ async function toggleClientStatus() {
   const newStatus = selectedClient.status==='activo' ? 'suspendido' : 'activo';
   await sb.from('clients').update({status:newStatus}).eq('id',selectedClient.id);
   const tipo = newStatus==='activo'?'activado':'suspendido';
-  await sb.from('activities').insert({description:`<strong>${selectedClient.name}</strong> ${newStatus==='activo'?'reactivado':'suspendido'}`,type:tipo,client_id:selectedClient.id});
+  await sb.from('activities').insert({description:`<strong>${esc(selectedClient.name)}</strong> ${newStatus==='activo'?'reactivado':'suspendido'}`,type:tipo,client_id:selectedClient.id});
+  if (newStatus==='suspendido') await sendEmail('client_suspended',{name:selectedClient.name});
   closeDetailModal();
   await loadClients();
   await loadActivity();
@@ -557,8 +782,8 @@ async function saveMetrics() {
   const visits = parseInt(document.getElementById('metricVisits').value)||0;
   const whatsapp_clicks = parseInt(document.getElementById('metricWA').value)||0;
   const month = new Date().toISOString().slice(0,7);
-  await sb.from('metrics').upsert({client_id:selectedClient.id, month, visits, whatsapp_clicks},{onConflict:'client_id,month'});
-  await sb.from('activities').insert({description:`Métricas actualizadas para <strong>${selectedClient.name}</strong>`,type:'metrica',client_id:selectedClient.id});
+  await sb.from('metrics').upsert({client_id:selectedClient.id,month,visits,whatsapp_clicks},{onConflict:'client_id,month'});
+  await sb.from('activities').insert({description:`Métricas actualizadas para <strong>${esc(selectedClient.name)}</strong>`,type:'metrica',client_id:selectedClient.id});
   alert('✅ Métricas guardadas');
   await loadActivity();
 }

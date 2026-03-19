@@ -601,6 +601,118 @@ footer {
   .hstat-num { font-size: 18px !important; }
   .sec-label { font-size: 10px !important; }
 }
+
+/* ── LEAD CAPTURE FORM ── */
+.lead-form {
+  display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+  margin-top: 24px; width: 100%; max-width: 460px;
+}
+.lead-input {
+  flex: 1; min-width: 160px; padding: 12px 16px;
+  background: rgba(10,15,30,0.8); border: 1px solid rgba(37,99,235,0.3);
+  border-radius: 12px; color: #f0f4ff; font-size: 13px;
+  font-family: 'Space Grotesk', sans-serif; outline: none;
+  backdrop-filter: blur(8px);
+}
+.lead-input:focus { border-color: #2563eb; }
+.lead-input::placeholder { color: #475569; }
+.lead-form-btn {
+  padding: 12px 22px; background: linear-gradient(135deg, #2563eb, #0891b2);
+  border: none; border-radius: 12px; color: #fff; font-size: 13px;
+  font-weight: 700; font-family: 'Space Grotesk', sans-serif;
+  cursor: pointer; transition: all 0.2s; white-space: nowrap;
+}
+.lead-form-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(37,99,235,0.5); }
+.lead-success {
+  display: none; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3);
+  border-radius: 12px; padding: 12px 20px; font-size: 13px; color: #22c55e;
+  text-align: center; margin-top: 16px; width: 100%; max-width: 460px;
+}
+
+/* ── TESTIMONIALS ── */
+.testimonials-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px;
+}
+.testimonial-card {
+  background: #0a0f1e; border: 1px solid #1a2540; border-radius: 20px;
+  padding: 28px 24px; position: relative; transition: all 0.2s;
+}
+.testimonial-card:hover { border-color: rgba(37,99,235,0.4); transform: translateY(-2px); }
+.testimonial-card::before {
+  content: '"'; position: absolute; top: 12px; left: 20px;
+  font-size: 60px; color: rgba(37,99,235,0.2); font-family: Georgia, serif; line-height: 1;
+}
+.testimonial-text {
+  font-size: 14px; color: #cbd5e1; line-height: 1.7; margin-bottom: 20px;
+  margin-top: 14px;
+}
+.testimonial-author { display: flex; align-items: center; gap: 12px; }
+.testimonial-avatar {
+  width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #1d4ed8, #0891b2);
+  display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;
+}
+.testimonial-name { font-size: 13px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
+.testimonial-biz { font-size: 11px; color: #475569; font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+.testimonial-plan {
+  font-size: 10px; padding: 2px 8px; border-radius: 20px;
+  background: rgba(37,99,235,0.1); border: 1px solid rgba(37,99,235,0.3); color: #60a5fa;
+  font-family: 'JetBrains Mono', monospace; margin-top: 4px; display: inline-block;
+}
+.stars { color: #f59e0b; font-size: 13px; margin-bottom: 6px; }
+
+/* ── COMPARISON TABLE ── */
+.compare-wrap { overflow-x: auto; margin-top: 40px; }
+.compare-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+.compare-table th {
+  padding: 14px 16px; font-size: 13px; font-weight: 700;
+  font-family: 'Space Grotesk', sans-serif; text-align: center;
+  border-bottom: 2px solid #1a2540;
+}
+.compare-table th:first-child { text-align: left; }
+.compare-table th.col-pro {
+  background: rgba(37,99,235,0.08); border-radius: 8px 8px 0 0;
+}
+.compare-table td {
+  padding: 12px 16px; font-size: 13px; color: #94a3b8;
+  border-bottom: 1px solid rgba(26,37,64,0.5); text-align: center;
+}
+.compare-table td:first-child { text-align: left; color: #e2e8f0; font-weight: 500; }
+.compare-table td.col-pro { background: rgba(37,99,235,0.05); }
+.compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+.compare-check { color: #22c55e; font-size: 15px; }
+.compare-x { color: #ef4444; opacity: 0.5; font-size: 15px; }
+.compare-partial { color: #f59e0b; font-size: 11px; font-family: 'JetBrains Mono', monospace; }
+
+/* ── FAQ ── */
+.faq-list { margin-top: 36px; max-width: 720px; margin-left: auto; margin-right: auto; }
+.faq-item {
+  background: #0a0f1e; border: 1px solid #1a2540; border-radius: 14px;
+  margin-bottom: 10px; overflow: hidden; transition: border-color 0.2s;
+}
+.faq-item.open { border-color: rgba(37,99,235,0.4); }
+.faq-q {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 22px; cursor: pointer; gap: 12px;
+}
+.faq-q-text { font-size: 14px; font-weight: 600; font-family: 'Space Grotesk', sans-serif; color: #e2e8f0; }
+.faq-chevron {
+  flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(37,99,235,0.1); border: 1px solid rgba(37,99,235,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: #60a5fa; transition: transform 0.2s;
+}
+.faq-item.open .faq-chevron { transform: rotate(180deg); }
+.faq-a {
+  max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease;
+  font-size: 13px; color: #94a3b8; line-height: 1.7;
+  padding: 0 22px;
+}
+.faq-item.open .faq-a { max-height: 300px; padding: 0 22px 18px; }
+
+@media(max-width:768px){
+  .testimonials-grid { grid-template-columns: 1fr !important; }
+  .compare-table th, .compare-table td { padding: 10px 10px; font-size: 12px; }
+}
 </style>
 </head>
 <body>
@@ -708,10 +820,18 @@ document.addEventListener('click',function(e){
       <a href="discover.html" class="btn-outline">Explorar la red →</a>
     </div>
 
+    <!-- Lead capture mini-form -->
+    <form class="lead-form" id="leadForm" onsubmit="submitLead(event)">
+      <input class="lead-input" id="leadName" type="text" placeholder="Nombre de tu negocio" required maxlength="80"/>
+      <input class="lead-input" id="leadPhone" type="tel" placeholder="WhatsApp (10 dígitos)" required maxlength="15"/>
+      <button class="lead-form-btn" type="submit" id="leadBtn">Quiero mi página 🚀</button>
+    </form>
+    <div class="lead-success" id="leadSuccess">✅ ¡Listo! Juan te contactará pronto por WhatsApp.</div>
+
     <div class="hero-stats">
-      <div class="hstat"><div class="hstat-num">48H</div><div class="hstat-label">Tu página lista</div></div>
+      <div class="hstat"><div class="hstat-num counter" data-target="48" data-suffix="H">48H</div><div class="hstat-label">Tu página lista</div></div>
       <div class="hstat"><div class="hstat-num">IA</div><div class="hstat-label">Incluida siempre</div></div>
-      <div class="hstat"><div class="hstat-num">$0</div><div class="hstat-label">Setup fundadores</div></div>
+      <div class="hstat"><div class="hstat-num counter" data-target="0" data-prefix="$">$0</div><div class="hstat-label">Setup fundadores</div></div>
       <div class="hstat"><div class="hstat-num">MX</div><div class="hstat-label">100% mexicano</div></div>
     </div>
   </div>
@@ -1071,6 +1191,153 @@ document.addEventListener('click',function(e){
 </div>
 </div>
 
+<!-- TESTIMONIALS -->
+<div class="sec-divider" id="testimonios">
+<div class="section">
+  <div class="sec-label">Lo que dicen</div>
+  <div class="sec-title">Negocios que ya crecen con NexWeb</div>
+  <div class="sec-sub">Resultados reales de negocios mexicanos que apostaron por tener presencia digital profesional.</div>
+  <div class="testimonials-grid">
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <div class="testimonial-text">Antes nadie me encontraba en Google. Ahora tengo mi página lista, mi chatbot responde a los clientes de madrugada y recibo gente nueva cada semana que dice que me encontró en internet.</div>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">✂️</div>
+        <div>
+          <div class="testimonial-name">OB Barbería</div>
+          <div class="testimonial-biz">Barbería · Monterrey, NL</div>
+          <div class="testimonial-plan">⭐ Fundador · Plan Pro</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <div class="testimonial-text">Pensé que una página web era para empresas grandes. Juan me convenció en 5 minutos y en 2 días ya tenía la mía. Mis clientes me preguntan seguido cómo la hice y les mando con Juan.</div>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">💪</div>
+        <div>
+          <div class="testimonial-name">FitLife Gym</div>
+          <div class="testimonial-biz">Gym · Guadalajara, JAL</div>
+          <div class="testimonial-plan">Plan Básico</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <div class="testimonial-text">Lo que más me gustó fue el directorio NexWeb — me llega tráfico de otros negocios sin hacer nada. Es como tener una red de publicidad compartida. Valió cada peso de la mensualidad.</div>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">🍽️</div>
+        <div>
+          <div class="testimonial-name">El Rincón Tapatío</div>
+          <div class="testimonial-biz">Restaurante · CDMX</div>
+          <div class="testimonial-plan">⭐ Fundador · Plan Elite</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- COMPARISON TABLE -->
+<div class="sec-divider" id="comparacion">
+<div class="section">
+  <div class="sec-label">Comparativa</div>
+  <div class="sec-title">¿Qué incluye cada plan?</div>
+  <div class="sec-sub">Todo lo que necesitas para dominar tu mercado local, desde $199/mes.</div>
+  <div class="compare-wrap">
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th style="width:40%;">Características</th>
+          <th>🌱 Básico<br/><span style="color:#94a3b8;font-size:11px;font-family:'JetBrains Mono',sans-serif;font-weight:400;">$199/mes</span></th>
+          <th class="col-pro">⚡ Pro<br/><span style="color:#60a5fa;font-size:11px;font-family:'JetBrains Mono',sans-serif;font-weight:400;">$399/mes</span></th>
+          <th>👑 Elite<br/><span style="color:#a78bfa;font-size:11px;font-family:'JetBrains Mono',sans-serif;font-weight:400;">$699/mes</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Página web profesional</td><td><span class="compare-check">✓</span></td><td class="col-pro"><span class="compare-check">✓</span></td><td><span class="compare-check">✓</span></td></tr>
+        <tr><td>Dominio + hosting incluido</td><td><span class="compare-check">✓</span></td><td class="col-pro"><span class="compare-check">✓</span></td><td><span class="compare-check">✓</span></td></tr>
+        <tr><td>Diseño único (no templates)</td><td><span class="compare-check">✓</span></td><td class="col-pro"><span class="compare-check">✓</span></td><td><span class="compare-check">✓</span></td></tr>
+        <tr><td>Adaptada para celular</td><td><span class="compare-check">✓</span></td><td class="col-pro"><span class="compare-check">✓</span></td><td><span class="compare-check">✓</span></td></tr>
+        <tr><td>Botón WhatsApp + Google Maps</td><td><span class="compare-check">✓</span></td><td class="col-pro"><span class="compare-check">✓</span></td><td><span class="compare-check">✓</span></td></tr>
+        <tr><td>Portal de cliente con métricas</td><td><span class="compare-check">✓</span></td><td class="col-pro"><span class="compare-check">✓</span></td><td><span class="compare-check">✓</span></td></tr>
+        <tr><td>Directorio NexWeb (tráfico gratis)</td><td><span class="compare-check">✓</span></td><td class="col-pro"><span class="compare-check">✓</span></td><td><span class="compare-check">✓</span></td></tr>
+        <tr><td>Asistente IA simple</td><td><span class="compare-check">✓</span></td><td class="col-pro"><span class="compare-check">✓</span></td><td><span class="compare-check">✓</span></td></tr>
+        <tr><td>Chatbot IA 24/7 avanzado</td><td><span class="compare-x">✗</span></td><td class="col-pro"><span class="compare-check">✓</span></td><td><span class="compare-check">✓</span></td></tr>
+        <tr><td>Formulario de citas online</td><td><span class="compare-x">✗</span></td><td class="col-pro"><span class="compare-check">✓</span></td><td><span class="compare-check">✓</span></td></tr>
+        <tr><td>Galería de fotos y videos</td><td><span class="compare-x">✗</span></td><td class="col-pro"><span class="compare-check">✓</span></td><td><span class="compare-check">✓</span></td></tr>
+        <tr><td>SEO básico en Google</td><td><span class="compare-x">✗</span></td><td class="col-pro"><span class="compare-check">✓</span></td><td><span class="compare-check">✓</span></td></tr>
+        <tr><td>IA entrenada con tu negocio</td><td><span class="compare-x">✗</span></td><td class="col-pro"><span class="compare-x">✗</span></td><td><span class="compare-check">✓</span></td></tr>
+        <tr><td>Sistema de reservas online</td><td><span class="compare-x">✗</span></td><td class="col-pro"><span class="compare-x">✗</span></td><td><span class="compare-check">✓</span></td></tr>
+        <tr><td>Reseñas de Google integradas</td><td><span class="compare-x">✗</span></td><td class="col-pro"><span class="compare-x">✗</span></td><td><span class="compare-check">✓</span></td></tr>
+        <tr><td>SEO avanzado (aparecer primero)</td><td><span class="compare-x">✗</span></td><td class="col-pro"><span class="compare-x">✗</span></td><td><span class="compare-check">✓</span></td></tr>
+        <tr><td>Cambios al mes</td><td><span class="compare-partial">—</span></td><td class="col-pro"><span class="compare-partial">2/mes</span></td><td><span class="compare-check">Ilimitados</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<!-- FAQ -->
+<div class="sec-divider" id="faq">
+<div class="section">
+  <div class="sec-label">Preguntas frecuentes</div>
+  <div class="sec-title">Todo lo que quieres saber</div>
+  <div class="sec-sub">Sin tecnicismos ni letra chica. Si no ves tu pregunta, escríbele a Juan por WhatsApp.</div>
+  <div class="faq-list">
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-text">¿Cuánto tarda en estar lista mi página?</span>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">Tu página web estará lista en menos de 48 horas hábiles desde que apruebas el diseño. Primero hacemos un briefing rápido por WhatsApp para entender tu negocio, luego Juan diseña y programa, y en dos días ya estás en línea.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-text">¿Necesito saber de tecnología o diseño?</span>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">Para nada. Solo necesitas contarnos de tu negocio — qué haces, dónde estás, cómo te contactan. Nosotros nos encargamos de todo: diseño, programación, dominio, hosting y la IA. Tú solo apruebas el resultado.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-text">¿Puedo cancelar cuando quiera?</span>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">Sí, sin penalizaciones ni contratos. Si decides cancelar, tu membresía termina al final del período pagado. No hay cargos ocultos, no hay letra chica. Aunque la mayoría de clientes se quedan porque ven resultados.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-text">¿Qué es el directorio NexWeb y cómo me beneficia?</span>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">Es un directorio público de todos los negocios en la red. Cuando alguien visita otro negocio NexWeb y busca un servicio que tú ofreces, puede encontrarte ahí. Es tráfico cruzado gratis — cada negocio que entra a la red aumenta las visitas para todos.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-text">¿Puedo cambiar de plan después?</span>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">Claro. Puedes subir de plan en cualquier momento y los cambios aplican al siguiente período de facturación. Si eres fundador, tu precio base siempre se mantiene — solo pagas la diferencia del plan nuevo.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-text">¿El dominio y el hosting están incluidos?</span>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">Sí, en todos los planes. Tu dominio (.com o .mx según disponibilidad) y el hosting de alta velocidad están incluidos en tu mensualidad. Sin costos extra, sin sorpresas.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-text">¿Cómo funciona la IA incluida?</span>
+        <span class="faq-chevron">▾</span>
+      </div>
+      <div class="faq-a">En el Plan Básico viene un asistente que responde preguntas frecuentes como horarios y ubicación. En el Pro, el chatbot IA puede agendar citas, cotizar servicios y atender clientes 24/7. En Elite, la IA se entrena específicamente con tu menú, precios y estilo de atención — habla como si fuera un empleado tuyo.</div>
+    </div>
+  </div>
+</div>
+</div>
+
 <!-- CTA -->
 <div class="cta-band" id="contacto">
   <h2>¿Listo para unirte<br/><span>a la red?</span></h2>
@@ -1085,7 +1352,10 @@ document.addEventListener('click',function(e){
   <div class="ft-logo">Nexweb Studio</div>
   <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin:14px 0;font-size:12px;">
     <a href="#membresias" style="color:#475569;text-decoration:none;" onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color='#475569'">Planes</a>
+    <a href="#comparacion" style="color:#475569;text-decoration:none;" onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color='#475569'">Comparativa</a>
     <a href="#fundadores" style="color:#475569;text-decoration:none;" onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color='#475569'">Fundadores</a>
+    <a href="#testimonios" style="color:#475569;text-decoration:none;" onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color='#475569'">Testimonios</a>
+    <a href="#faq" style="color:#475569;text-decoration:none;" onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color='#475569'">FAQ</a>
     <a href="discover.html" style="color:#475569;text-decoration:none;" onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color='#475569'">Directorio</a>
     <a href="network.html" style="color:#475569;text-decoration:none;" onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color='#475569'">La red</a>
     <a href="https://wa.me/12148011100" target="_blank" style="color:#475569;text-decoration:none;" onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color='#475569'">Contacto</a>
@@ -1418,6 +1688,41 @@ items.forEach(t => {
   el.innerHTML = `<span class="marquee-dot"></span>${t}`;
   track.appendChild(el);
 });
+</script>
+
+<script>
+// ── UTILITY: XSS escaping ──
+function esc(str) {
+  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ── FAQ TOGGLE ──
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+
+// ── LEAD CAPTURE FORM ──
+async function submitLead(e) {
+  e.preventDefault();
+  const name = document.getElementById('leadName').value.trim();
+  const phone = document.getElementById('leadPhone').value.trim();
+  if (!name || !phone) return;
+  const btn = document.getElementById('leadBtn');
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+  try {
+    await fetch('/api/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'lead_capture', data: { name, phone, source: 'hero_form' } })
+    });
+  } catch(_) {}
+  document.getElementById('leadForm').style.display = 'none';
+  document.getElementById('leadSuccess').style.display = 'block';
+}
 </script>
 
 <!-- ═══════════════════════════════════════════════════════
