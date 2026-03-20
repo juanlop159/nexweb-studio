@@ -126,7 +126,7 @@ export default async function handler(req) {
   }
 
   const RESEND_KEY = process.env.RESEND_API_KEY;
-  const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'juanlop159@gmail.com';
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'juanlop159@me.com';
 
   if (!RESEND_KEY) {
     // Graceful degradation: log but don't fail
